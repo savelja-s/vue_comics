@@ -3,20 +3,11 @@ services:
   app:
     image: node:lts-alpine
     container_name: app_frontend
-    command: sh frontend_setup.sh
+    command: sh /app/frontend_setup.sh
     volumes:
       - .:/app
     expose:
       - "8080"
     ports:
       - "8080:8080"
-    depends_on:
-      - app
-    networks:
-      - web_network
-networks:
-  db_network:
-    driver: bridge
-  web_network:
-    driver: bridge
  
