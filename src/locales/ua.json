@@ -18,11 +18,12 @@
     "price-title": "Ціна",
     "view-more-button": "Дізнатись більше",
     "back-button": "Назад до списку",
-    "add-to-cart-button": "Додати до кошика"
+    "add-to-cart-button": "Додати до кошика",
+    "details": "Детально"
   },
   "search": "Пошук",
   "tooltip": "Змінити вигляд",
-    "cart": {
+  "cart": {
     "notify": {
       "add": {
         "title": "Додано до кошика",

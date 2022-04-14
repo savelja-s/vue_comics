@@ -1,9 +1,9 @@
 <script lang="ts">
 import ComicBox from "@/components/ComicBox.vue";
-import {Options, Vue} from "vue-class-component";
-import {createNamespacedHelpers} from "vuex";
-import {PreorderComicInterface} from "@/types";
-import {PropType} from "vue";
+import { Options, Vue } from "vue-class-component";
+import { createNamespacedHelpers } from "vuex";
+import { PreorderComicInterface } from "@/types";
+import { PropType } from "vue";
 
 const store = createNamespacedHelpers("PreopderComics");
 
@@ -15,7 +15,7 @@ const store = createNamespacedHelpers("PreopderComics");
   computed: {
     ...store.mapState(["preorderComicsLatest"]),
   },
-  methods: {...store.mapActions(["getLatest"])},
+  methods: { ...store.mapActions(["getLatest"]) },
 })
 export default class Home extends Vue {
   protected searchValue = "";
@@ -30,6 +30,7 @@ export default class Home extends Vue {
   }
 
   changeView() {
+    // console.log(this.viewMode, "this.viewMode now");
     this.viewMode = !this.viewMode;
   }
 }
@@ -40,16 +41,16 @@ export default class Home extends Vue {
       <el-col :span="12" class="comics-control">
         <el-input :placeholder="$t('search')" v-model="searchValue"></el-input>
         <el-tooltip
-            effect="dark"
-            :content="$t('tooltip')"
-            placement="top-start"
+          effect="dark"
+          :content="$t('tooltip')"
+          placement="top-start"
         >
           <el-button type="primary" circle @click="changeView()">
             <el-icon v-if="viewMode">
-              <edit/>
+              <edit />
             </el-icon>
             <el-icon v-else>
-              <star/>
+              <star />
             </el-icon>
           </el-button>
         </el-tooltip>
@@ -57,11 +58,11 @@ export default class Home extends Vue {
     </el-row>
     <div v-if="preorderComicsLatest" :class="viewMode ? '' : 'block-view'">
       <ComicBox
-          v-for="comic in preorderComicsLatest"
-          :view-mode="viewMode"
-          v-bind:key="comic.id"
-          :comic="comic"
-          :search="searchValue"
+        v-for="comic in preorderComicsLatest"
+        :view-mode="viewMode"
+        v-bind:key="comic.id"
+        :comic="comic"
+        :search="searchValue"
       ></ComicBox>
     </div>
     <div v-else>

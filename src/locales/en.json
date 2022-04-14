@@ -18,7 +18,8 @@
     "price-title": "Price",
     "view-more-button": "More",
     "back-button": "Back to list",
-    "add-to-cart-button": "Add to cart"
+    "add-to-cart-button": "Add to cart",
+    "details": "Details"
   },
   "search": "Search",
   "tooltip": "Change view",

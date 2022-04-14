@@ -1,9 +1,13 @@
 <script lang="ts">
-import {Options, Vue} from "vue-class-component";
-import {ref} from "vue";
-import {createNamespacedHelpers} from "vuex";
-import {library} from '@fortawesome/fontawesome-svg-core';
-import {faShoppingCart,faCloudUpload,faArrowRight} from '@fortawesome/free-solid-svg-icons';
+import { Options, Vue } from "vue-class-component";
+import { ref } from "vue";
+import { createNamespacedHelpers } from "vuex";
+import { library } from "@fortawesome/fontawesome-svg-core";
+import {
+  faShoppingCart,
+  faCloudUpload,
+  faArrowRight,
+} from "@fortawesome/free-solid-svg-icons";
 
 library.add(faShoppingCart);
 
@@ -13,21 +17,30 @@ const store = createNamespacedHelpers("user");
   name: "HeaderComponent",
   components: {},
   computed: {
-    ...store.mapState(["user"]),
+    ...store.mapState(["user", "status"]),
   },
-  methods: {...store.mapMutations(["logout"]), ...store.mapGetters(["cartTotalLength"])},
+  methods: {
+    ...store.mapMutations(["logout"]),
+    ...store.mapGetters(["cartTotalLength"]),
+  },
 })
 export default class HeaderComponent extends Vue {
-  activeIndexMenu: string = '/';
-  menuIsActive: boolean = false;
-  language = ref('en');
+  activeIndexMenu = "/";
+  menuIsActive = false;
+  language = ref("en");
   private user?: any;
+  private status?: any;
   protected logout?: Function;
   protected cartTotalLength?: Function;
+  private logoPath = require("@/assets/logo.png");
+
+  get isAuthenticated() {
+    return this.status.isAuthenticated;
+  }
 
   logoutUser() {
     this.logout && this.logout();
-    this.$router.push('/');
+    this.$router.push("/");
   }
 
   login() {
@@ -45,89 +58,94 @@ export default class HeaderComponent extends Vue {
 </script>
 <template>
   <el-header height="auto">
-    <el-row type="flex" class="row-bg" justify="space-between">
-      <el-col class="header-logo" :span="12">
-        <div>
-          <a href="#">
-            <img style="width: 29px; height: 29px" src="@/assets/logo.png" alt="logo">
-          </a>
-        </div>
-      </el-col>
-      <el-col class="header-menu" :span="12">
+    <el-row class="" :gutter="20">
+      <el-col class="header-menu" :span="18">
         <el-button plain size="small" class="mobile-nav" @click="menuNav">
           <el-icon v-if="menuIsActive">
-            <menu/>
+            <menu />
           </el-icon>
           <el-icon v-else>
-            <close/>
+            <close />
           </el-icon>
         </el-button>
         <el-menu
-            :default-active="activeIndexMenu"
-            mode="horizontal"
-            v-bind:class="{ '' : !menuIsActive, isOpen : menuIsActive }"
+          :default-active="activeIndexMenu"
+          mode="horizontal"
+          v-bind:class="{ '': !menuIsActive, isOpen: menuIsActive }"
         >
           <el-menu-item index="/">
-            <router-link to="/">{{ $t("menu.home") }}</router-link>
+            <router-link to="/">
+              <img
+                style="width: 25px; height: 35px"
+                :src="logoPath"
+                alt="logo"
+              />
+            </router-link>
           </el-menu-item>
-          <el-menu-item index="preorder-comics">
-            <router-link to="/preorder-comics">{{ $t("menu.preorder-comics") }}</router-link>
+          <el-menu-item index="/preorder-comics">
+            <router-link to="/preorder-comics">
+              {{ $t("menu.preorder-comics") }}
+            </router-link>
           </el-menu-item>
-          <el-menu-item index="comics">
+          <el-menu-item index="/comics">
             <router-link to="/comics">{{ $t("menu.comics") }}</router-link>
           </el-menu-item>
-          <el-menu-item index="about">
+          <el-menu-item index="/about">
             <router-link to="/about">{{ $t("menu.about") }}</router-link>
           </el-menu-item>
         </el-menu>
+      </el-col>
+      <el-col class="header-user-cart" :span="6">
         <el-radio-group v-model="$i18n.locale" size="small">
           <el-radio-button
-              v-for="locale in $i18n.availableLocales"
-              :label="locale"
+            v-for="locale in $i18n.availableLocales"
+            :label="locale"
           >
             {{ locale.toUpperCase() }}
           </el-radio-button>
         </el-radio-group>
-        <el-dropdown v-if="user.username" size="small">
+        <el-dropdown v-if="isAuthenticated" size="small">
           <el-button type="primary">
             {{ user.username }}
             <el-icon class="el-icon--right">
-              <arrow-down/>
+              <arrow-down />
             </el-icon>
           </el-button>
           <template #dropdown>
             <el-dropdown-menu>
               <el-dropdown-item>
-                  <span @click="logoutUser" class="text-block">
-                      <i class="el-icon-upload el-icon-right"></i>
-                      {{ $t("buttons.logout") }}
-                    </span>
+                <span @click="logoutUser" class="text-block">
+                  <i class="el-icon-upload el-icon-right"></i>
+                  {{ $t("buttons.logout") }}
+                </span>
               </el-dropdown-item>
-              <el-dropdown-item>
-                Action 2
-              </el-dropdown-item>
+              <el-dropdown-item> Action 2</el-dropdown-item>
               <el-dropdown-item>Action 3</el-dropdown-item>
               <el-dropdown-item>Action 4</el-dropdown-item>
               <el-dropdown-item>Action 5</el-dropdown-item>
             </el-dropdown-menu>
           </template>
         </el-dropdown>
-        <el-button v-else @click="login" class="logout-btn" size="small" type="info"
+        <el-button
+          v-else
+          @click="login"
+          class="logout-btn"
+          size="small"
+          type="info"
         >
           <i class="el-icon-upload el-icon-right"></i>
           <span class="text-block">{{ $t("buttons.login") }}</span>
         </el-button>
-        <el-badge :value="cartLength()" class="item">
-          <router-link to="/cart" class="button is-success">
-            <el-button round type="info">
-              <font-awesome-icon icon="shopping-cart"/>
+        <router-link to="/cart" class="button is-success">
+          <el-badge :value="cartLength()" class="item">
+            <el-button round type="info" size="small">
+              <font-awesome-icon icon="shopping-cart" />
             </el-button>
-          </router-link>
-        </el-badge>
+          </el-badge>
+        </router-link>
       </el-col>
     </el-row>
   </el-header>
-
 </template>
 <style lang="scss" scoped>
 .el-header {
@@ -161,7 +179,7 @@ export default class HeaderComponent extends Vue {
     }
   }
 
-  @media(max-width: 776px) {
+  @media (max-width: 776px) {
     display: none;
     opacity: 0;
     background: #585757;
@@ -176,14 +194,13 @@ export default class HeaderComponent extends Vue {
   }
 }
 
-
 .mobile-nav {
   display: none;
   margin: 15px 10px 0 0;
   font-size: 14px;
   height: 29px;
   padding: 0 5px;
-  @media(max-width: 768px) {
+  @media (max-width: 768px) {
     display: block;
   }
 }
@@ -202,10 +219,23 @@ export default class HeaderComponent extends Vue {
   margin: 15px 15px 0 0;
   font-size: 14px;
   height: 29px;
-  @media(max-width: 480px) {
+  @media (max-width: 480px) {
     .text-block {
       display: none;
     }
   }
+}
+
+li.el-menu-item:first-of-type {
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+li.el-menu-item:first-of-type img {
+  margin-bottom: 13px;
+}
+
+.bg-secondary {
+  background-color: #6c757d;
 }
 </style>

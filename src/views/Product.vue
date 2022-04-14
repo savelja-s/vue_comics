@@ -1,8 +1,8 @@
 <script lang="ts">
-import {Options, Vue} from "vue-class-component";
-import {ElNotification} from 'element-plus'
-import {PreorderComicInterface} from "@/types";
-import {createNamespacedHelpers} from "vuex";
+import { Options, Vue } from "vue-class-component";
+import { ElNotification } from "element-plus";
+import { PreorderComicInterface } from "@/types";
+import { createNamespacedHelpers } from "vuex";
 
 const storeUser = createNamespacedHelpers("user");
 const storePreopderComics = createNamespacedHelpers("PreopderComics");
@@ -20,7 +20,7 @@ const storePreopderComics = createNamespacedHelpers("PreopderComics");
 })
 export default class Product extends Vue {
   protected product_type?: string;
-  protected quantity: number = 1;
+  protected quantity = 1;
   protected preorderComic?: PreorderComicInterface;
   protected setIsLoading?: Function;
   protected addToCart?: Function;
@@ -28,23 +28,31 @@ export default class Product extends Vue {
 
   get product() {
     const product: any = this.preorderComic;
-    document.title = product.title + ' | Comics';
+    document.title = product.title + " | Comics";
     return product;
   }
 
   mounted() {
     this.product_type = String(this.$route.params.product_type);
     if (!this.preorderComic?.id) {
-      this.getProduct()
+      this.getProduct();
     }
-    document.title = (this.preorderComic?.id ? this.preorderComic?.title : this.$route.meta.title) + " | Comics";
+    document.title =
+      (this.preorderComic?.id
+        ? this.preorderComic?.title
+        : this.$route.meta.title) + " | Comics";
   }
 
   getProduct() {
     this.setIsLoading && this.setIsLoading(true);
     const publisher_slug = this.$route.params.publisher_slug;
     const product_slug = this.$route.params.product_slug;
-    this.getByParams && this.getByParams({product_type: this.product_type, publisher_slug, product_slug});
+    this.getByParams &&
+      this.getByParams({
+        product_type: this.product_type,
+        publisher_slug,
+        product_slug,
+      });
     this.setIsLoading && this.setIsLoading(false);
   }
 
@@ -60,14 +68,14 @@ export default class Product extends Vue {
 
   addToMyCart() {
     if (isNaN(this.quantity) || this.quantity < 1) {
-      this.quantity = 1
+      this.quantity = 1;
     }
     const item = {
       product_type: this.product_type,
       product: this.product,
       quantity: this.quantity,
-      added_at: new Date()
-    }
+      added_at: new Date(),
+    };
     this.addToCart && this.addToCart(item);
     ElNotification({
       title: this.$t("cart.notify.add.title"),
@@ -83,12 +91,17 @@ export default class Product extends Vue {
       <h1 class="title">{{ product.title }}</h1>
       <el-row type="flex" justify="center" class="comic-control">
         <el-col :span="12">
-          <el-image v-if="product.image" :src="product.image || '@/assets/logo.png'" fit="fill" alt="comic picture"/>
+          <el-image
+            v-if="product.image"
+            :src="product.image || '@/assets/logo.png'"
+            fit="fill"
+            alt="comic picture"
+          />
           <el-image v-else>
             <template #error>
               <div class="image-slot">
                 <el-icon>
-                  <picture/>
+                  <picture />
                 </el-icon>
               </div>
             </template>
@@ -100,14 +113,18 @@ export default class Product extends Vue {
     <el-col :xs="8" :sm="8" :md="8" :lg="8" :xl="8">
       <h2 class="subtitle">Information</h2>
       <el-row type="flex" justify="space-between">
-        <el-col :span="12" class="comic-information text-left">{{ getPublisherName(product) }}</el-col>
-        <el-col :span="12" class="comic-information text-right">{{ product.price_usd }}</el-col>
+        <el-col :span="12" class="comic-information text-left">{{
+          getPublisherName(product)
+        }}</el-col>
+        <el-col :span="12" class="comic-information text-right">{{
+          product.price_usd
+        }}</el-col>
       </el-row>
       <el-divider></el-divider>
       <p><strong>Price: </strong>${{ product.price_usd }}</p>
       <el-row type="flex" justify="center" class="comic-control">
         <el-col :span="12" class="comic-information text-left">
-          <el-input-number v-model="quantity" :min="1" :max="99"/>
+          <el-input-number v-model="quantity" :min="1" :max="99" />
         </el-col>
         <el-col :span="12" class="comic-information text-right">
           <el-button @click="addToMyCart()" type="primary">
@@ -117,7 +134,9 @@ export default class Product extends Vue {
       </el-row>
       <el-row type="flex" justify="center" class="comic-control">
         <el-col :span="12">
-          <el-button @click="backToList" type="primary">{{ $t("comic.back-button") }}</el-button>
+          <el-button @click="backToList" type="primary">
+            {{ $t("comic.back-button") }}
+          </el-button>
         </el-col>
       </el-row>
     </el-col>
