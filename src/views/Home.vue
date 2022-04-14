@@ -1,61 +1,92 @@
+<script lang="ts">
+import ComicBox from "@/components/ComicBox.vue";
+import {Options, Vue} from "vue-class-component";
+import {createNamespacedHelpers} from "vuex";
+import {PreorderComicInterface} from "@/types";
+import {PropType} from "vue";
+
+const store = createNamespacedHelpers("PreopderComics");
+
+@Options({
+  name: "Home",
+  components: {
+    ComicBox,
+  },
+  computed: {
+    ...store.mapState(["preorderComicsLatest"]),
+  },
+  methods: {...store.mapActions(["getLatest"])},
+})
+export default class Home extends Vue {
+  protected searchValue = "";
+  protected viewMode = true;
+  protected getLatest?: Function;
+  protected preorderComicsLatest?: PropType<PreorderComicInterface[]>;
+
+  mounted() {
+    // console.log("mounted", this);
+    this.getLatest && this.getLatest();
+    // useStore().dispatch("PreopderComics/getLatest");
+  }
+
+  changeView() {
+    this.viewMode = !this.viewMode;
+  }
+}
+</script>
 <template>
   <div class="home">
-    <section class="hero is-medium is-dark mb-6">
-      <div class="hero-body has-text-centered">
-        <p class="title mb-6">
-          Welcome to Comics
-        </p>
-        <p class="subtitle">
-          The best comics store online
-        </p>
-      </div>
-    </section>
-    <div class="columns is-multiline">
-      <div class="column is-12">
-        <h2 class="is-size-2 has-text-centered">Latest Preorder Comics</h2>
-      </div>
-      <ProductBox
-          v-for="comic in latestPreorderComics"
+    <el-row type="flex" justify="center">
+      <el-col :span="12" class="comics-control">
+        <el-input :placeholder="$t('search')" v-model="searchValue"></el-input>
+        <el-tooltip
+            effect="dark"
+            :content="$t('tooltip')"
+            placement="top-start"
+        >
+          <el-button type="primary" circle @click="changeView()">
+            <el-icon v-if="viewMode">
+              <edit/>
+            </el-icon>
+            <el-icon v-else>
+              <star/>
+            </el-icon>
+          </el-button>
+        </el-tooltip>
+      </el-col>
+    </el-row>
+    <div v-if="preorderComicsLatest" :class="viewMode ? '' : 'block-view'">
+      <ComicBox
+          v-for="comic in preorderComicsLatest"
+          :view-mode="viewMode"
           v-bind:key="comic.id"
-          v-bind:product_type="product_type"
-          v-bind:product="comic"/>
+          :comic="comic"
+          :search="searchValue"
+      ></ComicBox>
+    </div>
+    <div v-else>
+      {{ $t("empty-page") }}
     </div>
   </div>
 </template>
 
-<script>
-import axios from 'axios'
-import ProductBox from '@/components/ProductBox'
-
-export default {
-  name: 'Home',
-  data() {
-    return {
-      latestPreorderComics: [],
-      product_type: 'preorder-comics',
-    }
-  },
-  components: {
-    ProductBox
-  },
-  mounted() {
-    this.getLatestPreorderComics()
-    document.title = 'Home | Comics'
-  },
-  methods: {
-    async getLatestPreorderComics() {
-      this.$store.commit('setIsLoading', true)
-      await axios
-          .get('/api/v1/preorder-comics/latest/')
-          .then(response => {
-            console.log(response.data, "DATA");
-            this.latestPreorderComics = response.data
-          })
-          .catch(error => {
-            console.log(error)
-          })
-      this.$store.commit('setIsLoading', false)
+<style scoped lang="scss">
+.comics-control {
+  .el-input {
+    display: inline-block;
+    width: 250px;
+    margin: 0 5px 0 0;
+    @media (max-width: 768px) {
+      display: block;
+      width: 100%;
+      margin: 0 10px 0 0;
     }
   }
 }
-</script>
+
+.block-view {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+}
+</style>

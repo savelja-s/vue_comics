@@ -1,117 +1,106 @@
-<script>
-import axios from 'axios'
-
-export default {
-  data() {
-    return {
-      showMobileMenu: false,
-      cart: {
-        items: []
-      }
-    }
-  },
-  beforeCreate() {
-    this.$store.commit('initializeStore')
-
-    const token = this.$store.state.token
-
-    if (token) {
-      axios.defaults.headers.common['Authorization'] = "Bearer " + token
-    } else {
-      axios.defaults.headers.common['Authorization'] = ""
-    }
-  },
-  mounted() {
-    this.cart = this.$store.state.cart
-  },
-  computed: {
-    cartTotalLength() {
-      let totalLength = 0
-
-      for (let i = 0; i < this.cart.items.length; i++) {
-        totalLength += this.cart.items[i].quantity
-      }
-
-      return totalLength
-    }
-  }
-}
-</script>
 <template>
-  <div id="wrapper">
-    <nav class="navbar is-dark">
-      <div class="navbar-brand">
-        <router-link to="/" class="navbar-item">
-          <strong>Comics</strong>
-        </router-link>
-        <a class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbar-menu"
-           @click="showMobileMenu = !showMobileMenu">
-          <span aria-hidden="true"></span>
-          <span aria-hidden="true"></span>
-          <span aria-hidden="true"></span>
-        </a>
-      </div>
-      <div class="navbar-menu" id="navbar-menu" v-bind:class="{'is-active': showMobileMenu }">
-        <div class="navbar-start">
-          <div class="navbar-item">
-            <form method="get" action="/search">
-              <div class="field has-addons">
-                <div class="control">
-                  <input type="text" class="input" placeholder="What are you looking for?" name="query">
-                </div>
-
-                <div class="control">
-                  <button class="button is-success">
-                      <span class="icon">
-                      <i class="fas fa-search"></i>
-                      </span>
-                  </button>
-                </div>
-              </div>
-            </form>
-          </div>
-        </div>
-
-        <div class="navbar-end">
-          <router-link to="/preorder-comics" class="navbar-item">Preorder Comics</router-link>
-          <router-link to="/comics" class="navbar-item">Comics</router-link>
-
-          <div class="navbar-item">
-            <div class="buttons">
-              <template v-if="$store.state.isAuthenticated">
-                <router-link to="/my-account" class="button is-light">My account</router-link>
-              </template>
-
-              <template v-else>
-                <router-link to="/log-in" class="button is-light">Log in</router-link>
-              </template>
-
-              <router-link to="/cart" class="button is-success">
-                <span class="icon"><i class="fas fa-shopping-cart"></i></span>
-                <span>Cart ({{ cartTotalLength }})</span>
-              </router-link>
-            </div>
-          </div>
-        </div>
-      </div>
-    </nav>
-
-    <div class="is-loading-bar has-text-centered" v-bind:class="{'is-loading': $store.state.isLoading }">
+  <div id="app">
+    <HeaderComponent
+        v-if="$route.name != 'login' && $route.name != '404'"
+    ></HeaderComponent>
+    <div class="is-loading-bar" v-bind:class="{'is-loading': status.isLoading }">
       <div class="lds-dual-ring"></div>
     </div>
-
-    <section class="section">
-      <router-view/>
-    </section>
-
-    <footer class="footer">
-      <p class="has-text-centered">Copyright (c) 2022</p>
-    </footer>
+    <el-main>
+      <router-view v-slot="{ Component }">
+        <transition name="fade" mode="out-in">
+          <component :is="Component"/>
+        </transition>
+      </router-view>
+    </el-main>
+    <FooterComponent
+        v-if="$route.name != 'login' && $route.name != '404'"
+    ></FooterComponent>
   </div>
 </template>
 
-<style lang="scss">
-@import '../node_modules/bulma';
+<script lang="ts">
+import EventBus from "./common/EventBus";
+import HeaderComponent from "./components/layout/HeaderComponent.vue";
+import FooterComponent from "./components/layout/FooterComponent.vue";
+import {Options, Vue} from "vue-class-component";
+import {createNamespacedHelpers} from "vuex";
+
+const store = createNamespacedHelpers("user");
+
+@Options({
+  name: "App",
+  components: {
+    HeaderComponent,
+    FooterComponent,
+  },
+  computed: {...store.mapState(["user", "cart", "status"])},
+  beforeCreate() {
+
+  },
+  beforeDestroy() {
+     //TODO: ????
+    EventBus.remove('logout');
+  },
+  mounted() {
+    //TODO: ????
+    EventBus.on('logout', () => {
+      this.logOut();
+    });
+  },
+  methods: {
+    logOut() {
+      console.log("logOut NEEED UPDATE");
+      // this.$store.dispatch('user/logout');
+      // this.$router.push("/");
+    }
+  },
+})
+export default class App extends Vue {
+  protected showMobileMenu: boolean = false;
+  protected user?: any;
+  protected status?: any;
+
+  created() {
+  }
+}
+</script>
+
+<style>
+.el-main {
+  overflow: hidden;
+}
+
+.fade-enter-active {
+  animation: sladePageIn 1s forwards;
+  animation-timing-function: cubic-bezier(0.8, -0.49, 0.36, 1);
+}
+
+.fade-leave-active {
+  animation: sladePageDown 1s forwards;
+  animation-timing-function: cubic-bezier(0.8, -0.49, 0.36, 1);
+}
+
+@keyframes slidePageIn {
+  from {
+    opacity: 0;
+    transform: translateY(-100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0%);
+  }
+}
+
+@keyframes sladePageDown {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0.1;
+    transform: translateY(100%);
+  }
+}
 
 .lds-dual-ring {
   display: inline-block;
@@ -143,12 +132,13 @@ export default {
 .is-loading-bar {
   height: 0;
   overflow: hidden;
-
   -webkit-transition: all 0.3s;
   transition: all 0.3s;
 
-  &.is-loading {
-    height: 80px;
-  }
+&
+.is-loading {
+  height: 80px;
+}
+
 }
 </style>

@@ -1,45 +1,55 @@
-<script>
-export default {
+<script lang="ts">
+import {Options, Vue} from "vue-class-component";
+import {CartItem as CartItemModel, PreorderComicInterface} from "@/types";
+import {createNamespacedHelpers} from "vuex";
+import {PropType} from 'vue'
+
+const storeUser = createNamespacedHelpers("user");
+
+@Options({
   name: 'CartItem',
   props: {
-    initialItem: Object
-  },
-  data() {
-    return {
-      item: this.initialItem
-    }
+    item: {required: true, type: Object as PropType<PreorderComicInterface>,}
   },
   methods: {
-    getItemTotal(item) {
-      return item.quantity * item.product.price_usd
-    },
-    decrementQuantity(item) {
-      item.quantity -= 1
-
-      if (item.quantity === 0) {
-        this.$emit('removeFromCart', item)
-      }
-
-      this.updateCart()
-    },
-    incrementQuantity(item) {
-      item.quantity += 1
-
-      this.updateCart()
-    },
-    updateCart() {
-      localStorage.setItem('cart', JSON.stringify(this.$store.state.cart))
-    },
-    removeFromCart(item) {
-      this.$emit('removeFromCart', item)
-
-      this.updateCart()
-    },
-    getRoute(item) {
-      // console.log(product_type, product)
-      return `/${item.product_type}/${item.product.publisher.slug}/${item.product.slug}/`;
-    },
+    ...storeUser.mapMutations(["removeFromCart", "updateCartItem"]),
   },
+  computed: {
+    // ...storeUser.mapState(["cart"]),
+  },
+})
+export default class CartItem extends Vue {
+  protected item?: CartItemModel;
+  protected removeFromCart?: Function;
+  protected updateCartItem?: Function;
+
+  getItemTotal(item: CartItemModel) {
+    return (item.quantity * (item.product.price_usd || item.price || 0)).toFixed(2);
+  }
+
+  decrementQuantity(item: CartItemModel) {
+    item.quantity -= 1
+    if (item.quantity === 0) this.removeFromMyCart(item)
+    this.update(item)
+  }
+
+  incrementQuantity(item: CartItemModel) {
+    item.quantity += 1
+    this.update(item)
+  }
+
+  update(item: CartItemModel) {
+    this.updateCartItem && this.updateCartItem(item);
+  }
+
+  removeFromMyCart(item: CartItemModel) {
+    this.removeFromCart && this.removeFromCart(item);
+  }
+
+  getRoute(item: CartItemModel) {
+    // console.log(product_type, product)
+    return `/${item.product_type}/${item.product.publisher?.slug}/${item.product.slug}/`;
+  }
 }
 </script>
 <template>
@@ -53,9 +63,9 @@ export default {
       <a @click="decrementQuantity(item)">-</a>
       <a @click="incrementQuantity(item)">+</a>
     </td>
-    <td>${{ getItemTotal(item).toFixed(2) }}</td>
+    <td>${{ getItemTotal(item) }}</td>
     <td>
-      <button class="delete" @click="removeFromCart(item)"></button>
+      <button class="delete" @click="removeFromMyCart(item)"></button>
     </td>
   </tr>
 </template>
