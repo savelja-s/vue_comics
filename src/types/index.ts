@@ -3,6 +3,8 @@ export interface PreorderComicInterface {
     slug?: string;
     title?: string;
     publisher?: PublisherInterface;
+    writer?: WriterInterface;
+    artist?: ArtistInterface;
     description?: string;
     image?: string;
     price_usd?: number;
@@ -11,6 +13,16 @@ export interface PreorderComicInterface {
 export interface PublisherInterface {
     name?: string;
     slug?: string;
+}
+
+export interface WriterInterface {
+    name?: string;
+    id?: string;
+}
+
+export interface ArtistInterface {
+    name: string;
+    id: string;
 }
 
 export class PreorderComic implements PreorderComicInterface {
