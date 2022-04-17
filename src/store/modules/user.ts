@@ -8,7 +8,8 @@ const state = {
     isAuthenticated: !!user.access,
     isLoading: false,
     viewMode: viewMode,
-    perPage: 15,
+    perPage: localStorage.getItem("perPage") || 8,
+    language: localStorage.getItem("language") || "en",
   },
   user: user,
   cart: new Cart(cart.items || []),
@@ -61,6 +62,7 @@ const mutations = {
   logout(state: any) {
     state.user = {};
     state.isAuthenticated = false;
+    console.log("logout.state",state);
     localStorage.setItem("user", JSON.stringify(state.user));
   },
   clearCart(state: any) {
@@ -76,6 +78,14 @@ const mutations = {
   changeViewMode(state: any) {
     state.status.viewMode = !state.status.viewMode;
     localStorage.setItem("viewMode", state.status.viewMode);
+  },
+  changeLanguage(state: any, language: any | string) {
+    state.status.language = language;
+    localStorage.setItem("language", state.status.language);
+  },
+  changePerPage(state: any, perPage: any | number) {
+    state.status.perPage = perPage;
+    localStorage.setItem("perPage", state.status.perPage);
   },
 };
 const actions = {};

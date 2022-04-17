@@ -96,21 +96,21 @@ const routes: Array<RouteRecordRaw> = [
     },
   },
   {
-    path: "/preorder-comics/:publisher_slug?",
-    name: "preorder-comics",
+    path: "/:product_type/:publisher_slug?",
+    name: "category",
     component: Category,
     meta: {
       title: "Preorder Comics",
     },
   },
-  {
-    path: "/comics/:publisher_slug?",
-    name: "comics",
-    component: Category,
-    meta: {
-      title: "Comics",
-    },
-  },
+  // {
+  //   path: "/comics/:publisher_slug?",
+  //   name: "comics",
+  //   component: Category,
+  //   meta: {
+  //     title: "Comics",
+  //   },
+  // },
 ];
 
 const router = createRouter({

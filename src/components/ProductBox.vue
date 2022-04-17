@@ -5,14 +5,14 @@ import {PropType} from "vue";
 import {createNamespacedHelpers} from "vuex";
 import {ElNotification} from "element-plus";
 
-const store = createNamespacedHelpers("PreopderComics");
+const store = createNamespacedHelpers("product");
 const storeUser = createNamespacedHelpers("user");
 
 @Options({
   name: "ProductBox",
   components: {},
   methods: {
-    ...store.mapMutations(["setComic"]),
+    ...store.mapMutations(["setProduct"]),
     ...storeUser.mapMutations(["addToCart"]),
   },
   computed: {
@@ -27,7 +27,7 @@ const storeUser = createNamespacedHelpers("user");
   },
 })
 export default class ProductBox extends Vue {
-  protected setComic?: Function;
+  protected setProduct?: Function;
   protected status?: any;
   protected product_type?: string;
   protected product?: PropType<PreorderComicInterface>;
@@ -60,9 +60,9 @@ export default class ProductBox extends Vue {
     return this.status.viewMode;
   }
 
-  created() {
-    // console.log("this.viewMode", this.viewMode);
-  }
+  // created() {
+  //   console.log("ProductBox", this);
+  // }
 
   addToMyCart() {
     if (isNaN(this.quantity) || this.quantity < 1) {
@@ -93,7 +93,7 @@ export default class ProductBox extends Vue {
 </script>
 <template>
   <el-card :body-style="{ padding: '0px' }">
-    <el-row type="flex" justify="center" class="comic-page comic-block">
+    <el-row type="flex" justify="center" class="comic-page comic-block" v-if="product.id">
       <el-col :xs="10" :sm="10" :md="10" :lg="10" :xl="10" class="image">
         <el-image
             v-if="product.image"
@@ -116,7 +116,7 @@ export default class ProductBox extends Vue {
         <el-col class="text-left mb-5">
           <p class="title"><strong>{{ product.title }}</strong></p>
           <p>
-            {{ truncate(product.description, 500) }}
+            {{ truncate(product.description, 350) }}
           </p>
           <hr>
           <div class="info">
@@ -149,10 +149,6 @@ export default class ProductBox extends Vue {
             </router-link>
           </el-col>
         </el-row>
-        <!--        <el-button-group>-->
-
-
-        <!--        </el-button-group>-->
       </el-col>
     </el-row>
   </el-card>

@@ -5,19 +5,19 @@ import ComicBox from "@/components/ComicBox.vue";
 import { createNamespacedHelpers } from "vuex";
 import { PropType } from "vue";
 
-const store = createNamespacedHelpers("PreopderComics");
+const store = createNamespacedHelpers("product");
 @Options({
   name: "ComicDetailPage",
   components: {
     ComicBox,
   },
   computed: {
-    ...store.mapState(["preorderComic"]),
+    ...store.mapState(["product"]),
   },
   methods: { ...store.mapActions(["getById"]) },
 })
 export default class ComicDetailPage extends Vue {
-  protected preorderComic?: PropType<PreorderComicInterface>;
+  protected product?: PropType<PreorderComicInterface>;
   protected getById?: Function;
 
   getPublisherName(comic: PreorderComicInterface) {
@@ -27,7 +27,7 @@ export default class ComicDetailPage extends Vue {
   }
 
   created() {
-    if (!this.preorderComic && this.getById) {
+    if (!this.product && this.getById) {
       this.getById(this.$route.params.id);
     }
   }
@@ -41,19 +41,19 @@ export default class ComicDetailPage extends Vue {
   <el-row type="flex" justify="center" class="comic-page">
     <el-col :xs="23" :sm="22" :md="20" :lg="16" :xl="16">
       <h1>
-        {{ preorderComic.title }}
+        {{ product.title }}
       </h1>
-      <img :src="preorderComic.image" alt="comic picture"/>
+      <img :src="product.image" alt="comic picture"/>
       <p>
-        {{ preorderComic.description }}
+        {{ product.description }}
       </p>
       <el-divider></el-divider>
       <el-row type="flex" justify="space-between">
         <el-col :span="12" class="comic-information text-left">
-          {{ getPublisherName(preorderComic) }}
+          {{ getPublisherName(product) }}
         </el-col>
         <el-col :span="12" class="comic-information text-right">
-          {{ preorderComic.price_usd }}
+          {{ product.price_usd }}
         </el-col>
       </el-row>
       <el-row type="flex" justify="center" class="comic-control">

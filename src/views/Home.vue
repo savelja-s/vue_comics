@@ -1,78 +1,113 @@
 <script lang="ts">
-import ComicBox from "@/components/ComicBox.vue";
-import { Options, Vue } from "vue-class-component";
-import { createNamespacedHelpers } from "vuex";
-import { PreorderComicInterface } from "@/types";
-import { PropType } from "vue";
+// import ComicBox from "@/components/ComicBox.vue";
+import {Options, Vue} from "vue-class-component";
+import {createNamespacedHelpers} from "vuex";
+import {PreorderComicInterface} from "@/types";
+import {PropType} from "vue";
+import ProductBox from "@/components/ProductBox.vue";
 
-const store = createNamespacedHelpers("PreopderComics");
+const storeUser = createNamespacedHelpers("user");
+const storeProduct = createNamespacedHelpers("product");
 
 @Options({
   name: "Home",
   components: {
-    ComicBox,
+    // ComicBox,
+    ProductBox,
   },
   computed: {
-    ...store.mapState(["preorderComicsLatest"]),
+    ...storeProduct.mapState(["productsLatest"]),
+    ...storeUser.mapState(["status"]),
   },
-  methods: { ...store.mapActions(["getLatest"]) },
+  methods: {
+    ...storeProduct.mapActions(["getLatest"]),
+    ...storeUser.mapMutations(["setIsLoading", "changeViewMode"]),
+  },
 })
 export default class Home extends Vue {
+  protected product_type = "preorder-comics";
   protected searchValue = "";
-  protected viewMode = true;
   protected getLatest?: Function;
-  protected preorderComicsLatest?: PropType<PreorderComicInterface[]>;
+  protected changeViewMode?: Function;
+  protected productsLatest?: PropType<PreorderComicInterface[]>;
+  protected status?: any;
 
   mounted() {
     // console.log("mounted", this);
-    this.getLatest && this.getLatest();
-    // useStore().dispatch("PreopderComics/getLatest");
+    document.title = "Comics";
+    !this.productsLatest?.length && this.getLatest && this.getLatest();
   }
 
   changeView() {
-    // console.log(this.viewMode, "this.viewMode now");
-    this.viewMode = !this.viewMode;
+    this.changeViewMode && this.changeViewMode();
+  }
+
+  get viewMode() {
+    return this.status.viewMode;
+  }
+
+  get viewSize(): number {
+    return this.viewMode ? 5 : 10;
+  }
+
+
+  getOffset(index: number): number {
+    return index % (this.viewMode ? 4 : 2) ? 1 : 0;
   }
 }
 </script>
 <template>
   <div class="home">
     <el-row type="flex" justify="center">
-      <el-col :span="12" class="comics-control">
-        <el-input :placeholder="$t('search')" v-model="searchValue"></el-input>
-        <el-tooltip
-          effect="dark"
-          :content="$t('tooltip')"
-          placement="top-start"
-        >
-          <el-button type="primary" circle @click="changeView()">
-            <el-icon v-if="viewMode">
-              <edit />
-            </el-icon>
-            <el-icon v-else>
-              <star />
-            </el-icon>
-          </el-button>
-        </el-tooltip>
+      <el-col :span="3"> aside</el-col>
+      <el-col :span="21">
+        <el-row justify="center">
+          <el-col :span="24" class="comics-control">
+            <el-input
+                :placeholder="$t('search')"
+                v-model="searchValue"
+            ></el-input>
+            <el-tooltip
+                effect="dark"
+                :content="$t('tooltip')"
+                placement="top-start"
+            >
+              <el-button type="primary" circle @click="changeView()">
+                <el-icon v-if="viewMode">
+                  <edit/>
+                </el-icon>
+                <el-icon v-else>
+                  <star/>
+                </el-icon>
+              </el-button>
+            </el-tooltip>
+          </el-col>
+          <el-col v-if="!productsLatest">
+            {{ $t("empty-page") }}
+          </el-col>
+          <el-col
+              v-else
+              v-for="(comic, index) in productsLatest"
+              :key="comic.id"
+              :span="viewSize"
+              :offset="getOffset(index)"
+              class="product-item"
+          >
+            <ProductBox
+                :product="comic"
+                :product_type="product_type"
+            ></ProductBox>
+          </el-col>
+        </el-row>
       </el-col>
     </el-row>
-    <div v-if="preorderComicsLatest" :class="viewMode ? '' : 'block-view'">
-      <ComicBox
-        v-for="comic in preorderComicsLatest"
-        :view-mode="viewMode"
-        v-bind:key="comic.id"
-        :comic="comic"
-        :search="searchValue"
-      ></ComicBox>
-    </div>
-    <div v-else>
-      {{ $t("empty-page") }}
-    </div>
   </div>
 </template>
 
 <style scoped lang="scss">
 .comics-control {
+  margin-bottom: 20px;
+
   .el-input {
     display: inline-block;
     width: 250px;
@@ -83,11 +118,5 @@ export default class Home extends Vue {
       margin: 0 10px 0 0;
     }
   }
-}
-
-.block-view {
-  display: flex;
-  flex-wrap: wrap;
-  flex-direction: row;
 }
 </style>

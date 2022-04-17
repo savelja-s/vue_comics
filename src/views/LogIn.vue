@@ -11,7 +11,7 @@ export default {
     }
   },
   mounted() {
-    document.title = 'Log In | Comics'
+    document.title = "Log In | Comics";
   },
   methods: {
     async submitForm() {

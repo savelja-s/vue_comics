@@ -4,12 +4,12 @@ import {PreorderComicInterface} from "@/types";
 import {PropType, ref} from 'vue'
 import {createNamespacedHelpers} from "vuex";
 
-const store = createNamespacedHelpers("PreopderComics");
+const store = createNamespacedHelpers("product");
 
 @Options({
   name: "ComicBox",
   components: {},
-  methods: {...store.mapMutations(["setComic"])},
+  methods: {...store.mapMutations(["setProduct"])},
   props: {
     comic: {required: true, type: Object as PropType<PreorderComicInterface>,},
     viewMode: {required: true, default: true},
@@ -20,7 +20,7 @@ export default class ComicBox extends Vue {
   // comic?: PreorderComic = ref(PreorderComic);
   viewMode: boolean = true;
   // search: string = "";
-  protected setComic?: Function;
+  protected setProduct?: Function;
 
   // created() {
   //  console.log('ComicBox.comic', this.comic);
@@ -34,8 +34,8 @@ export default class ComicBox extends Vue {
   }
 
   viewMore(comic: PreorderComicInterface) {
-    if (comic && this.setComic) {
-      this.setComic(comic);
+    if (comic && this.setProduct) {
+      this.setProduct(comic);
       this.$router.push({
         name: "comic-detail",
         params: {id: comic.id, comic: JSON.stringify(comic)},

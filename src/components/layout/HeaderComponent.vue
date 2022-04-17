@@ -1,8 +1,7 @@
 <script lang="ts">
-import { Options, Vue } from "vue-class-component";
-import { ref } from "vue";
-import { createNamespacedHelpers } from "vuex";
-import { library } from "@fortawesome/fontawesome-svg-core";
+import {Options, Vue} from "vue-class-component";
+import {createNamespacedHelpers} from "vuex";
+import {library} from "@fortawesome/fontawesome-svg-core";
 import {
   faShoppingCart,
   faCloudUpload,
@@ -20,19 +19,34 @@ const store = createNamespacedHelpers("user");
     ...store.mapState(["user", "status"]),
   },
   methods: {
-    ...store.mapMutations(["logout"]),
+    ...store.mapMutations(["logout", "changeLanguage"]),
     ...store.mapGetters(["cartTotalLength"]),
   },
 })
 export default class HeaderComponent extends Vue {
-  activeIndexMenu = "/";
-  menuIsActive = false;
-  language = ref("en");
+  protected activeIndexMenu: string = "/";
+  protected menuIsActive = false;
   private user?: any;
   private status?: any;
   protected logout?: Function;
+  protected changeLanguage?: Function;
   protected cartTotalLength?: Function;
   private logoPath = require("@/assets/logo.png");
+
+  mounted() {
+    this.$i18n.locale = this.language;
+  }
+
+  get language() {
+    return this.status.language;
+  }
+
+  changeLang(val: any) {
+    if (val && this.changeLanguage) {
+      this.changeLanguage(val);
+      this.$i18n.locale = val;
+    }
+  }
 
   get isAuthenticated() {
     return this.status.isAuthenticated;
@@ -62,33 +76,29 @@ export default class HeaderComponent extends Vue {
       <el-col class="header-menu" :span="18">
         <el-button plain size="small" class="mobile-nav" @click="menuNav">
           <el-icon v-if="menuIsActive">
-            <menu />
+            <menu/>
           </el-icon>
           <el-icon v-else>
-            <close />
+            <close/>
           </el-icon>
         </el-button>
         <el-menu
-          :default-active="activeIndexMenu"
-          mode="horizontal"
-          v-bind:class="{ '': !menuIsActive, isOpen: menuIsActive }"
+            :default-active="$route.fullPath"
+            mode="horizontal"
+            v-bind:class="{ '': !menuIsActive, isOpen: menuIsActive }"
         >
           <el-menu-item index="/">
             <router-link to="/">
-              <img
-                style="width: 25px; height: 35px"
-                :src="logoPath"
-                alt="logo"
-              />
+              <img style="width: 25px; height: 35px" :src="logoPath" alt="logo"/>
             </router-link>
           </el-menu-item>
           <el-menu-item index="/preorder-comics">
-            <router-link to="/preorder-comics">
+            <router-link :to="{name:'category',params:{product_type:'preorder-comics'}}">
               {{ $t("menu.preorder-comics") }}
             </router-link>
           </el-menu-item>
           <el-menu-item index="/comics">
-            <router-link to="/comics">{{ $t("menu.comics") }}</router-link>
+            <router-link :to="{name:'category',params:{product_type:'comics'}}">{{ $t("menu.comics") }}</router-link>
           </el-menu-item>
           <el-menu-item index="/about">
             <router-link to="/about">{{ $t("menu.about") }}</router-link>
@@ -96,10 +106,10 @@ export default class HeaderComponent extends Vue {
         </el-menu>
       </el-col>
       <el-col class="header-user-cart" :span="6">
-        <el-radio-group v-model="$i18n.locale" size="small">
+        <el-radio-group v-model="language" size="small" @change="changeLang">
           <el-radio-button
-            v-for="locale in $i18n.availableLocales"
-            :label="locale"
+              v-for="locale in $i18n.availableLocales"
+              :label="locale"
           >
             {{ locale.toUpperCase() }}
           </el-radio-button>
@@ -108,7 +118,7 @@ export default class HeaderComponent extends Vue {
           <el-button type="primary">
             {{ user.username }}
             <el-icon class="el-icon--right">
-              <arrow-down />
+              <arrow-down/>
             </el-icon>
           </el-button>
           <template #dropdown>
@@ -127,11 +137,11 @@ export default class HeaderComponent extends Vue {
           </template>
         </el-dropdown>
         <el-button
-          v-else
-          @click="login"
-          class="logout-btn"
-          size="small"
-          type="info"
+            v-else
+            @click="login"
+            class="logout-btn"
+            size="small"
+            type="info"
         >
           <i class="el-icon-upload el-icon-right"></i>
           <span class="text-block">{{ $t("buttons.login") }}</span>
@@ -139,7 +149,7 @@ export default class HeaderComponent extends Vue {
         <router-link to="/cart" class="button is-success">
           <el-badge :value="cartLength()" class="item">
             <el-button round type="info" size="small">
-              <font-awesome-icon icon="shopping-cart" />
+              <font-awesome-icon icon="shopping-cart"/>
             </el-button>
           </el-badge>
         </router-link>

@@ -8,7 +8,7 @@
       </div>
 
       <ProductBox
-          v-for="comic in preorderComics"
+          v-for="comic in products"
           v-bind:key="comic.id"
           v-bind:product="comic"/>
     </div>
@@ -26,7 +26,7 @@ export default {
   },
   data() {
     return {
-      preorderComics: [],
+      products: [],
       query: ''
     }
   },
@@ -49,7 +49,7 @@ export default {
       await axios
           .post('/api/v1/preorder-comics/search/', {'query': this.query})
           .then(response => {
-            this.preorderComics = response.data.results;
+            this.products = response.data.results;
             console.log(response.data, "DATA-search");
           })
           .catch(error => {

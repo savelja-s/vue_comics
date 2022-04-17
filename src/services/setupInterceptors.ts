@@ -1,10 +1,13 @@
 import {api} from "./api";
 
+const getUser = () => {
+    return JSON.parse(localStorage.getItem("user") || "{}");
+}
 const axiosInstance = api.getInstance();
 const setup = (store: any) => {
     axiosInstance.interceptors.request.use(
         (config: any) => {
-            const token = store.state.user.user.access;
+            const token = getUser().access;
             // console.log("token", token);
             if (token) config.headers["Authorization"] = "Bearer " + token;
             return config;
@@ -27,18 +30,21 @@ const setup = (store: any) => {
                 if (err.response.status === 401 && !originalConfig._retry) {
                     originalConfig._retry = true;
                     try {
-                        const token = store.state.user.user.refresh;
+                        const token = getUser().refresh;
                         if (token) {
-                            // console.log("token", token);
-                            axiosInstance
+                            // console.log("err.response", err.response);
+                            await axiosInstance
                                 .post("/token/refresh/", {refresh: token})
                                 .then((response: any) => {
-                                    if (response.data) store.commit('user/updateUser', response.data);
+                                    if (response.data) {
+                                        // console.log("response.data", response.data);
+                                        store.commit('user/updateUser', response.data);
+                                    }
                                 })
                                 .catch((error: any) => {
                                     store.commit('user/logout')
                                 });
-                            console.log("NEEED TEST");
+                            // console.log("NEEED TEST");
                         }
                         return axiosInstance(originalConfig);
                     } catch (_error) {

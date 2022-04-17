@@ -8,7 +8,7 @@ const axiosInstance = axios.create({
     },
 });
 const catchNotificationError = (error: any) => {
-    console.log(error)
+    console.log(error);
     ElNotification({
         title: "Something wrong.",
         message: error,
@@ -25,7 +25,6 @@ export const api = {
             .then((response: any) => response.data)
             .catch((error: any) => catchNotificationError(error));
     },
-
     post(url: string, params = {}) {
         return axiosInstance
             .post(url, params)

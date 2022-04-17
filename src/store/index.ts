@@ -1,7 +1,7 @@
 import {createStore} from "vuex";
-import PreopderComics from "./modules/preorderComics";
+import product from "./modules/product";
 import user from "./modules/user";
 
 export default createStore({
-    modules: {PreopderComics, user},
+    modules: {product, user},
 });

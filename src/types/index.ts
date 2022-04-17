@@ -8,6 +8,28 @@ export interface PreorderComicInterface {
     description?: string;
     image?: string;
     price_usd?: number;
+    price_grn?: number;
+    expected_ship_at?: number;
+}
+
+export interface ImageInterface {
+    id: string;
+    status: boolean;
+    image: string;
+}
+
+export interface ComicInterface {
+    id?: string;
+    status: boolean;
+    slug?: string;
+    title?: string;
+    publisher?: PublisherInterface;
+    writer?: WriterInterface;
+    artist?: ArtistInterface;
+    description?: string;
+    images: ImageInterface[];
+    price_usd?: number;
+    created_at?: any;
 }
 
 export interface PublisherInterface {
@@ -33,6 +55,8 @@ export class PreorderComic implements PreorderComicInterface {
     public description?: string;
     public image?: string;
     public price_usd?: number;
+    public price_grn?: number;
+    public expected_ship_at?: number;
 
     public constructor(
         id?: string,
@@ -41,7 +65,9 @@ export class PreorderComic implements PreorderComicInterface {
         publisher?: PublisherInterface,
         description?: string,
         image?: string,
-        price_usd?: number
+        price_usd?: number,
+        price_grn?: number,
+        expected_ship_at?: number
     ) {
         this.id = id;
         this.slug = slug;
@@ -49,6 +75,8 @@ export class PreorderComic implements PreorderComicInterface {
         this.description = description;
         this.image = image;
         this.price_usd = price_usd;
+        this.price_grn = price_grn;
+        this.expected_ship_at = expected_ship_at;
         this.publisher = publisher;
     }
 }

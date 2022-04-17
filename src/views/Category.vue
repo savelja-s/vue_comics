@@ -1,54 +1,56 @@
 <script lang="ts">
 import {Options, Vue} from "vue-class-component";
 import ProductBox from "@/components/ProductBox.vue";
-import {PreorderComicInterface} from "@/types";
 import {createNamespacedHelpers} from "vuex";
-import {PropType, ref} from "vue";
 
 const storeUser = createNamespacedHelpers("user");
-const storePreopderComics = createNamespacedHelpers("PreopderComics");
+const storeProduct = createNamespacedHelpers("product");
 @Options({
   name: "Category",
   components: {
     ProductBox,
   },
   methods: {
-    ...storeUser.mapMutations(["setIsLoading", "changeViewMode"]),
-    ...storePreopderComics.mapActions(["getPreorderListByParams"]),
+    ...storeUser.mapMutations(["setIsLoading", "changeViewMode", "changePerPage"]),
+    ...storeProduct.mapActions(["getProductListByParams"]),
   },
   computed: {
-    ...storePreopderComics.mapState(["preorderComics"]),
+    ...storeProduct.mapState(["products"]),
     ...storeUser.mapState(["status"]),
   },
   watch: {
     $route(to, from) {
-      const CATEGORIES = ["preorder-comics", "comics"];
       // console.log('WATCH', to, from);
-      if (CATEGORIES.includes(to.name)) {
-        const publisher_slug = this.$route.params.publisher_slug;
-        this.getPreorderListByParams({product_type: to.name, publisher_slug});
+      if (to.name == 'category') {
+        this.currentPage = 1;
+        this.loadProducts();
       }
     },
   },
 })
 export default class Category extends Vue {
-  protected preorderComics?: PropType<PreorderComicInterface[]>;
-  protected product_type = "";
+  protected products?: any;
   protected setIsLoading?: Function;
-  protected getPreorderListByParams?: Function;
+  protected getProductListByParams?: Function;
   protected changeViewMode?: Function;
+  protected changePerPage?: Function;
   protected status?: any;
   protected searchValue = "";
-  protected currentPage = ref(1);
-  protected pageSize = ref(25);
+  protected currentPage = 1;
 
   mounted() {
-    const product_type = String(this.$route.name);
-    this.product_type = product_type;
-    const publisher_slug = this.$route.params.publisher_slug;
+    this.loadProducts();
+  }
+
+  loadProducts() {
     this.setIsLoading && this.setIsLoading(true);
-    this.getPreorderListByParams &&
-    this.getPreorderListByParams({product_type, publisher_slug});
+    this.getProductListByParams &&
+    this.getProductListByParams({
+      product_type: this.product_type,
+      publisher_slug: this.$route.params.publisher_slug,
+      page: this.currentPage,
+      perPage: this.pageSize,
+    });
     this.setIsLoading && this.setIsLoading(false);
   }
 
@@ -57,19 +59,32 @@ export default class Category extends Vue {
   }
 
   get productList() {
-    return this.preorderComics;
+    return this.products.results;
+  }
+
+  get paginatorTotal() {
+    return this.products["count"];
   }
 
   created() {
-    document.title = this.$route.meta.title + " | Comics";
+    const title = String(this.$route.params.product_type);
+    document.title = title.charAt(0).toUpperCase() + title.slice(1).replace("-", " ") + " | Comics";
   }
 
   changeView() {
     this.changeViewMode && this.changeViewMode();
   }
 
+  get product_type() {
+    return this.$route.params.product_type;
+  }
+
   get viewSize(): number {
     return this.viewMode ? 5 : 10;
+  }
+
+  get pageSize(): number {
+    return this.status.perPage;
   }
 
   getOffset(index: number): number {
@@ -77,11 +92,15 @@ export default class Category extends Vue {
   }
 
   handleSizeChange(val: number) {
-    console.log(`${val} items per page`)
+    this.changePerPage && this.changePerPage(val);
+    this.loadProducts();
+    // console.log(`${val} items per page`)
   }
 
   handleCurrentChange(val: number) {
-    console.log(`current page: ${val}`)
+    this.currentPage = val;
+    this.loadProducts();
+    // console.log(`current page: ${val}`)
   }
 }
 </script>
@@ -111,7 +130,11 @@ export default class Category extends Vue {
               </el-button>
             </el-tooltip>
           </el-col>
+          <el-col v-if="!productList">
+            {{ $t("empty-page") }}
+          </el-col>
           <el-col
+              v-else
               v-for="(comic, index) in productList"
               :key="comic.id"
               :span="viewSize"
@@ -123,21 +146,18 @@ export default class Category extends Vue {
                 :product_type="product_type"
             ></ProductBox>
           </el-col>
-          <el-col v-if="productList.length" :span="24">
+          <el-col v-if="productList" :span="24">
             <el-pagination
                 v-model:currentPage="currentPage"
                 v-model:page-size="pageSize"
-                :page-sizes="[100, 200, 300, 400]"
+                :page-sizes="[8, 16, 32, 60, 100]"
                 :small="true"
                 :background="true"
                 layout="total, sizes, prev, pager, next, jumper"
-                :total="400"
+                :total="paginatorTotal"
                 @size-change="handleSizeChange"
                 @current-change="handleCurrentChange"
             />
-          </el-col>
-          <el-col v-if="!productList.length">
-            {{ $t("empty-page") }}
           </el-col>
         </el-row>
       </el-col>
