@@ -2,12 +2,14 @@
 import {Options, Vue} from "vue-class-component";
 import ProductBox from "@/components/ProductBox.vue";
 import {createNamespacedHelpers} from "vuex";
+import AsideComponent from "@/components/layout/AsideComponent.vue";
 
 const storeUser = createNamespacedHelpers("user");
 const storeProduct = createNamespacedHelpers("product");
 @Options({
   name: "Category",
   components: {
+    AsideComponent,
     ProductBox,
   },
   methods: {
@@ -106,62 +108,64 @@ export default class Category extends Vue {
 </script>
 <template>
   <div class="category">
-    <el-row type="flex" justify="center">
-      <el-col :span="3"> aside</el-col>
-      <el-col :span="21">
-        <el-row justify="center">
-          <el-col :span="24" class="comics-control">
-            <el-input
-                :placeholder="$t('search')"
-                v-model="searchValue"
-            ></el-input>
-            <el-tooltip
-                effect="dark"
-                :content="$t('tooltip')"
-                placement="top-start"
+    <el-container>
+      <AsideComponent width="200px"></AsideComponent>
+      <el-container>
+        <el-container>
+          <el-row justify="center">
+            <el-col :span="24" class="comics-control">
+              <el-input
+                  :placeholder="$t('search')"
+                  v-model="searchValue"
+              ></el-input>
+              <el-tooltip
+                  effect="dark"
+                  :content="$t('tooltip')"
+                  placement="top-start"
+              >
+                <el-button type="primary" circle @click="changeView()">
+                  <el-icon v-if="viewMode">
+                    <edit/>
+                  </el-icon>
+                  <el-icon v-else>
+                    <star/>
+                  </el-icon>
+                </el-button>
+              </el-tooltip>
+            </el-col>
+            <el-col v-if="!productList">
+              {{ $t("empty-page") }}
+            </el-col>
+            <el-col
+                v-else
+                v-for="(comic, index) in productList"
+                :key="comic.id"
+                :span="viewSize"
+                :offset="getOffset(index)"
+                class="product-item"
             >
-              <el-button type="primary" circle @click="changeView()">
-                <el-icon v-if="viewMode">
-                  <edit/>
-                </el-icon>
-                <el-icon v-else>
-                  <star/>
-                </el-icon>
-              </el-button>
-            </el-tooltip>
-          </el-col>
-          <el-col v-if="!productList">
-            {{ $t("empty-page") }}
-          </el-col>
-          <el-col
-              v-else
-              v-for="(comic, index) in productList"
-              :key="comic.id"
-              :span="viewSize"
-              :offset="getOffset(index)"
-              class="product-item"
-          >
-            <ProductBox
-                :product="comic"
-                :product_type="product_type"
-            ></ProductBox>
-          </el-col>
-          <el-col v-if="productList" :span="24">
-            <el-pagination
-                v-model:currentPage="currentPage"
-                v-model:page-size="pageSize"
-                :page-sizes="[8, 16, 32, 60, 100]"
-                :small="true"
-                :background="true"
-                layout="total, sizes, prev, pager, next, jumper"
-                :total="paginatorTotal"
-                @size-change="handleSizeChange"
-                @current-change="handleCurrentChange"
-            />
-          </el-col>
-        </el-row>
-      </el-col>
-    </el-row>
+              <ProductBox
+                  :product="comic"
+                  :product_type="product_type"
+              ></ProductBox>
+            </el-col>
+            <el-col v-if="productList?.length" :span="24">
+              <el-pagination
+                  v-model:currentPage="currentPage"
+                  v-model:page-size="pageSize"
+                  :page-sizes="[8, 16, 32, 60, 100]"
+                  :small="true"
+                  :background="true"
+                  layout="total, sizes, prev, pager, next, jumper"
+                  :total="paginatorTotal"
+                  @size-change="handleSizeChange"
+                  @current-change="handleCurrentChange"
+              />
+            </el-col>
+          </el-row>
+        </el-container>
+      </el-container>
+    </el-container>
   </div>
 </template>
 <style scoped lang="scss">

@@ -7,34 +7,42 @@ import {
   faCloudUpload,
   faArrowRight,
 } from "@fortawesome/free-solid-svg-icons";
+import PublisherItemsComponent from "@/components/layout/PublisherItemsComponent.vue";
 
 library.add(faShoppingCart);
 
 const store = createNamespacedHelpers("user");
+const storePublisher = createNamespacedHelpers("publisher");
 
 @Options({
   name: "HeaderComponent",
-  components: {},
+  components: {
+    PublisherItemsComponent
+  },
   computed: {
     ...store.mapState(["user", "status"]),
+    ...storePublisher.mapState(["publishers"]),
   },
   methods: {
     ...store.mapMutations(["logout", "changeLanguage"]),
     ...store.mapGetters(["cartTotalLength"]),
+    ...storePublisher.mapActions(["getListPublisher"]),
   },
 })
 export default class HeaderComponent extends Vue {
-  protected activeIndexMenu: string = "/";
   protected menuIsActive = false;
   private user?: any;
+  private publishers?: any;
   private status?: any;
   protected logout?: Function;
   protected changeLanguage?: Function;
   protected cartTotalLength?: Function;
   private logoPath = require("@/assets/logo.png");
+  protected getListPublisher?: Function;
 
   mounted() {
     this.$i18n.locale = this.language;
+    !this.publishers.length && this.getListPublisher && this.getListPublisher();
   }
 
   get language() {
@@ -92,14 +100,18 @@ export default class HeaderComponent extends Vue {
               <img style="width: 25px; height: 35px" :src="logoPath" alt="logo"/>
             </router-link>
           </el-menu-item>
-          <el-menu-item index="/preorder-comics">
-            <router-link :to="{name:'category',params:{product_type:'preorder-comics'}}">
-              {{ $t("menu.preorder-comics") }}
-            </router-link>
-          </el-menu-item>
-          <el-menu-item index="/comics">
-            <router-link :to="{name:'category',params:{product_type:'comics'}}">{{ $t("menu.comics") }}</router-link>
-          </el-menu-item>
+          <el-sub-menu index="/preorder-comics">
+            <template #title>{{ $t("menu.preorder-comics") }}</template>
+            <PublisherItemsComponent
+                :product_type="'preorder-comics'"
+            ></PublisherItemsComponent>
+          </el-sub-menu>
+          <el-sub-menu index="/comics">
+            <template #title>{{ $t("menu.comics") }}</template>
+            <PublisherItemsComponent
+                :product_type="'comics'"
+            ></PublisherItemsComponent>
+          </el-sub-menu>
           <el-menu-item index="/about">
             <router-link to="/about">{{ $t("menu.about") }}</router-link>
           </el-menu-item>

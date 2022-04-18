@@ -37,7 +37,6 @@ export default class ProductBox extends Vue {
   getRoute(product: PreorderComicInterface): Object {
     return {
       name: "product-preorder",
-      path: `/${this.product_type}/${product.publisher?.slug}/${product.slug}/`,
       params: {
         product_type: this.product_type,
         publisher_slug: product.publisher?.slug,

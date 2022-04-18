@@ -1,6 +1,9 @@
 import axios from "axios";
 import {ElNotification} from 'element-plus'
+import store from "../store";
 
+var _retry = false;
+const states: any = store?.state;
 const axiosInstance = axios.create({
     baseURL: process.env.VUE_APP_API_URL,
     headers: {
@@ -14,6 +17,15 @@ const catchNotificationError = (error: any) => {
         message: error,
         type: "error",
     });
+}
+const catchError = (error: any) => {
+    const response = error.response;
+    // if (response.status === 401 && !_retry) {
+    //     _retry = true;
+    //     updateRefreshToken(states.user.user.refresh, states);
+    // } else {
+    //     // catchNotificationError(error);
+    // }
 }
 export const api = {
     getInstance() {

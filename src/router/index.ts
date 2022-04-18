@@ -103,14 +103,6 @@ const routes: Array<RouteRecordRaw> = [
       title: "Preorder Comics",
     },
   },
-  // {
-  //   path: "/comics/:publisher_slug?",
-  //   name: "comics",
-  //   component: Category,
-  //   meta: {
-  //     title: "Comics",
-  //   },
-  // },
 ];
 
 const router = createRouter({

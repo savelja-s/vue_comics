@@ -3,12 +3,13 @@ import { CartItem, Cart } from "@/types";
 const user = JSON.parse(localStorage.getItem("user") || "{}");
 const cart = JSON.parse(localStorage.getItem("cart") || "{}");
 const viewMode = localStorage.getItem("viewMode") !== "false";
+const perPage = localStorage.getItem("perPage");
 const state = {
   status: {
     isAuthenticated: !!user.access,
     isLoading: false,
     viewMode: viewMode,
-    perPage: localStorage.getItem("perPage") || 8,
+    perPage: perPage ? Number.parseInt(perPage) : 8,
     language: localStorage.getItem("language") || "en",
   },
   user: user,

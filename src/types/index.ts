@@ -35,6 +35,7 @@ export interface ComicInterface {
 export interface PublisherInterface {
     name?: string;
     slug?: string;
+    count?: number;
 }
 
 export interface WriterInterface {

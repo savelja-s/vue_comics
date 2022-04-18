@@ -4,6 +4,21 @@ const getUser = () => {
     return JSON.parse(localStorage.getItem("user") || "{}");
 }
 const axiosInstance = api.getInstance();
+var needWait = false;
+
+const updateRefreshToken = (token: string, store: any) => {
+    console.log("TOKEN", token, "STORE", store);
+    axiosInstance
+        .post("/token/refresh/", {refresh: token})
+        .then((response: any) => {
+            console.log("refresh", response.data);
+            store.commit("user/updateUser", response.data);
+        })
+        .catch((error: any) => {
+            console.log("refresh-error");
+            store.commit("user/logout");
+        });
+}
 const setup = (store: any) => {
     axiosInstance.interceptors.request.use(
         (config: any) => {
@@ -18,40 +33,31 @@ const setup = (store: any) => {
     );
     axiosInstance.interceptors.response.use(
         (res: any) => res,
-        async (err: any) => {
+        (err: any) => {
             const originalConfig = err.config;
-            // console.log("interceptors.err", originalConfig);
-            if (
-                originalConfig &&
-                originalConfig.url !== "/token/login" &&
-                err.response
-            ) {
-                // Access Token was expired
-                if (err.response.status === 401 && !originalConfig._retry) {
-                    originalConfig._retry = true;
-                    try {
-                        const token = getUser().refresh;
-                        if (token) {
-                            // console.log("err.response", err.response);
-                            await axiosInstance
-                                .post("/token/refresh/", {refresh: token})
-                                .then((response: any) => {
-                                    if (response.data) {
-                                        // console.log("response.data", response.data);
-                                        store.commit('user/updateUser', response.data);
-                                    }
-                                })
-                                .catch((error: any) => {
-                                    store.commit('user/logout')
-                                });
-                            // console.log("NEEED TEST");
-                        }
-                        return axiosInstance(originalConfig);
-                    } catch (_error) {
-                        return Promise.reject(_error);
-                    }
-                }
+            console.log("TEST-401", err.config);
+            if (err.response.status === 401 && !needWait) {
+                const token = getUser().refresh;
+                token && updateRefreshToken(token, store);
             }
+            // if (originalConfig && originalConfig.url !== "/token/login" && err.response) {
+            //     // Access Token was expired
+            //     if (err.response.status === 401 && !needWait) {
+            //         needWait = true;
+            //         try {
+            //             const token = getUser().refresh;
+            //             if (token) {
+            //                 // console.log("err.response", err.response);
+            //                 updateRefreshToken(token, store);
+            //                 console.log("NEEED TEST");
+            //             }
+            //             return axiosInstance(originalConfig);
+            //         } catch (_error) {
+            //             console.log("CATCH");
+            //             return Promise.reject(_error);
+            //         }
+            //     }
+            // }
             return Promise.reject(err);
         }
     );

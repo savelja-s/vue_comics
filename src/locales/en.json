@@ -34,5 +34,7 @@
         "message": "The product was removed with the cart."
       }
     }
-  }
+  },
+  "publishers": "Publishers",
+  "all": "All"
 }

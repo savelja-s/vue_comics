@@ -48,8 +48,8 @@ const actions = {
         const product_type = params.product_type;
         if (product_type) {
             const publisher_slug = params.publisher_slug;
-            let url = `/${product_type}/${publisher_slug ? publisher_slug + '/' : ""}` +
-                `?page=${params.page}&page_size=${params.perPage}`;
+            let url = `/${product_type}/${publisher_slug ? "?publisher__slug=" + publisher_slug : ""}` +
+                `&page=${params.page}&page_size=${params.perPage}`;
             // console.log(url);
             const data: any = await api.get(url);
             if (data) {
