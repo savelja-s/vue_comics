@@ -1,16 +1,16 @@
 <script lang="ts">
-import {Options, Vue} from "vue-class-component";
-import {api} from "@/services/api";
-import {reactive, ref} from 'vue'
-import type {FormInstance} from 'element-plus'
-import {createNamespacedHelpers} from "vuex";
+import { Options, Vue } from "vue-class-component";
+import api from "@/services/api";
+import { reactive, ref } from "vue";
+import type { FormInstance } from "element-plus";
+import { createNamespacedHelpers } from "vuex";
 
 const store = createNamespacedHelpers("user");
 
 @Options({
   name: "LoginPage",
   components: {},
-  methods: {...store.mapMutations(["login"])},
+  methods: { ...store.mapMutations(["login"]) },
 })
 export default class LoginPage extends Vue {
   // validateEmail = (rule: any, value: string, callback: any) => {
@@ -23,7 +23,7 @@ export default class LoginPage extends Vue {
   //   }
   // };
   protected login?: Function;
-  ruleFormRef = ref<FormInstance>()
+  ruleFormRef = ref<FormInstance>();
   ruleForm = reactive({
     username: "",
     password: "",
@@ -31,29 +31,35 @@ export default class LoginPage extends Vue {
   });
   rules = reactive({
     username: [
-      {required: true, message: 'Please input Activity name', trigger: 'blur'},
-      {min: 3, max: 50, message: 'Length should be 3 to 50', trigger: 'blur'},
+      {
+        required: true,
+        message: "Please input Activity name",
+        trigger: "blur",
+      },
+      { min: 3, max: 50, message: "Length should be 3 to 50", trigger: "blur" },
     ],
     password: [
-      {required: true, message: 'Please input password', trigger: 'blur'},
-      {min: 3, max: 50, message: 'Length should be 3 to 50', trigger: 'blur'},
+      { required: true, message: "Please input password", trigger: "blur" },
+      { min: 3, max: 50, message: "Length should be 3 to 50", trigger: "blur" },
     ],
   });
 
   async submitForm(formEl: FormInstance | undefined) {
-    if (!formEl) return
+    if (!formEl) return;
     await formEl.validate((valid, fields) => {
       if (valid) {
-        const {username, password} = this.ruleForm;
+        const { username, password } = this.ruleForm;
         if (!username || !password) return;
-        api.getInstance().post("/token/login/", {username, password})
-            .then((response: any) => {
-              if (this.login) {
-                this.login({...response.data, username});
-                this.$router.push({name: "home"});
-              }
-            })
-            .catch((error: any) => console.log(error));
+        api
+          .getInstance()
+          .post("/token/login/", { username, password })
+          .then((response: any) => {
+            if (this.login) {
+              this.login({ ...response.data, username });
+              this.$router.push({ name: "home" });
+            }
+          })
+          .catch((error: any) => console.log(error));
       } else {
         return false;
       }
@@ -61,8 +67,8 @@ export default class LoginPage extends Vue {
   }
 
   resetForm = (formEl: FormInstance | undefined) => {
-    if (!formEl) return
-    formEl.resetFields()
+    if (!formEl) return;
+    formEl.resetFields();
   };
 }
 </script>
@@ -72,12 +78,12 @@ export default class LoginPage extends Vue {
       <div>
         <h1>Login</h1>
         <el-form
-            :model="ruleForm"
-            status-icon
-            :rules="rules"
-            ref="ruleFormRef"
-            label-width="120px"
-            class="demo-ruleForm"
+          :model="ruleForm"
+          status-icon
+          :rules="rules"
+          ref="ruleFormRef"
+          label-width="120px"
+          class="demo-ruleForm"
         >
           <!--          <el-form-item label="Email" prop="email">-->
           <!--            <el-input-->
@@ -88,16 +94,16 @@ export default class LoginPage extends Vue {
           <!--          </el-form-item>-->
           <el-form-item label="Username" prop="username">
             <el-input
-                type="text"
-                v-model="ruleForm.username"
-                autocomplete="off"
+              type="text"
+              v-model="ruleForm.username"
+              autocomplete="off"
             ></el-input>
           </el-form-item>
           <el-form-item label="Password" prop="password">
             <el-input
-                type="password"
-                v-model="ruleForm.password"
-                autocomplete="off"
+              type="password"
+              v-model="ruleForm.password"
+              autocomplete="off"
             ></el-input>
           </el-form-item>
           <el-form-item>

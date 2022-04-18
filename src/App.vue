@@ -2,16 +2,13 @@
   <el-container id="app">
     <HeaderComponent v-if="$route.name != 'login' && $route.name != '404'">
     </HeaderComponent>
-    <div
-        class="is-loading-bar"
-        v-bind:class="{ 'is-loading': status.isLoading }"
-    >
+    <div class="is-loading-bar" :class="{ 'is-loading': status.isLoading }">
       <div class="lds-dual-ring"></div>
     </div>
     <el-main>
       <router-view v-slot="{ Component }">
         <transition name="fade" mode="out-in">
-          <component :is="Component"/>
+          <component :is="Component" />
         </transition>
       </router-view>
     </el-main>
@@ -21,13 +18,12 @@
 </template>
 
 <script lang="ts">
-// import EventBus from "./common/EventBus";
 import HeaderComponent from "./components/layout/HeaderComponent.vue";
 import FooterComponent from "./components/layout/FooterComponent.vue";
-import {Options, Vue} from "vue-class-component";
-import {createNamespacedHelpers} from "vuex";
+import { Options, Vue } from "vue-class-component";
+import { createNamespacedHelpers } from "vuex";
 
-const store = createNamespacedHelpers("user");
+const storeAuth = createNamespacedHelpers("auth");
 
 @Options({
   name: "App",
@@ -35,39 +31,18 @@ const store = createNamespacedHelpers("user");
     HeaderComponent,
     FooterComponent,
   },
-  computed: {...store.mapState(["user", "cart", "status"])},
-  // beforeCreate() {},
-  // beforeDestroy() {
-  //   //TODO: ????
-  //   EventBus.remove("logout");
-  // },
-  // mounted() {
-  //   //TODO: ????
-  //   EventBus.on("logout", () => {
-  //     this.logOut();
-  //   });
-  // },
-  // methods: {
-  //   logOut() {
-  //     console.log("logOut NEEED UPDATE");
-  //     // this.$store.dispatch('user/logout');
-  //     // this.$router.push("/");
-  //   },
-  // },
+  computed: { ...storeAuth.mapState(["status"]) },
 })
 export default class App extends Vue {
-  protected showMobileMenu = false;
-  protected user?: any;
   protected status?: any;
-
-  // created() {}
 }
 </script>
 
 <style>
-body{
+body {
   margin: 10px;
 }
+
 .el-main {
   overflow: hidden;
 }
@@ -136,10 +111,8 @@ body{
   -webkit-transition: all 0.3s;
   transition: all 0.3s;
 
-&
-.is-loading {
-  height: 80px;
-}
-
+  & .is-loading {
+    height: 80px;
+  }
 }
 </style>

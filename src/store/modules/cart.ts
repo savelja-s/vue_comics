@@ -1,18 +1,7 @@
 import { CartItem, Cart } from "@/types";
 
-const user = JSON.parse(localStorage.getItem("user") || "{}");
 const cart = JSON.parse(localStorage.getItem("cart") || "{}");
-const viewMode = localStorage.getItem("viewMode") !== "false";
-const perPage = localStorage.getItem("perPage");
 const state = {
-  status: {
-    isAuthenticated: !!user.access,
-    isLoading: false,
-    viewMode: viewMode,
-    perPage: perPage ? Number.parseInt(perPage) : 8,
-    language: localStorage.getItem("language") || "en",
-  },
-  user: user,
   cart: new Cart(cart.items || []),
 };
 const getters = {
@@ -28,16 +17,6 @@ const getters = {
   },
 };
 const mutations = {
-  login(state: any, payload: any) {
-    state.status.isAuthenticated = !!payload;
-    state.user = { ...payload };
-    localStorage.setItem("user", JSON.stringify(state.user));
-  },
-  updateUser(state: any, payload: any) {
-    state.status.isAuthenticated = !!payload;
-    state.user = { ...state.user, ...payload };
-    localStorage.setItem("user", JSON.stringify(state.user));
-  },
   addToCart(state: any, item: any) {
     const exists = state.cart.items.filter(
       (i: CartItem) =>
@@ -57,15 +36,6 @@ const mutations = {
     else state.cart.items.push(item);
     localStorage.setItem("cart", JSON.stringify(state.cart));
   },
-  setIsLoading(state: any, status: any) {
-    state.isLoading = status;
-  },
-  logout(state: any) {
-    state.user = {};
-    state.isAuthenticated = false;
-    console.log("logout.state",state);
-    localStorage.setItem("user", JSON.stringify(state.user));
-  },
   clearCart(state: any) {
     state.cart = { items: [] };
     localStorage.setItem("cart", JSON.stringify(state.cart));
@@ -75,18 +45,6 @@ const mutations = {
       (i: CartItem) => i.product.id !== item.product.id
     );
     localStorage.setItem("cart", JSON.stringify(state.cart));
-  },
-  changeViewMode(state: any) {
-    state.status.viewMode = !state.status.viewMode;
-    localStorage.setItem("viewMode", state.status.viewMode);
-  },
-  changeLanguage(state: any, language: any | string) {
-    state.status.language = language;
-    localStorage.setItem("language", state.status.language);
-  },
-  changePerPage(state: any, perPage: any | number) {
-    state.status.perPage = perPage;
-    localStorage.setItem("perPage", state.status.perPage);
   },
 };
 const actions = {};

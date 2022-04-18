@@ -1,17 +1,19 @@
 <script lang="ts">
-import {Options, Vue} from "vue-class-component";
-import {ElNotification} from "element-plus";
-import {PreorderComicInterface} from "@/types";
-import {createNamespacedHelpers} from "vuex";
+import { Options, Vue } from "vue-class-component";
+import { ElNotification } from "element-plus";
+import { PreorderComicInterface } from "@/types";
+import { createNamespacedHelpers } from "vuex";
 
-const storeUser = createNamespacedHelpers("user");
+const storeAuth = createNamespacedHelpers("auth");
+const storeCart = createNamespacedHelpers("cart");
 const storeProduct = createNamespacedHelpers("product");
 
 @Options({
   name: "Product",
   components: {},
   methods: {
-    ...storeUser.mapMutations(["setIsLoading", "addToCart"]),
+    ...storeAuth.mapMutations(["setIsLoading"]),
+    ...storeCart.mapMutations(["addToCart"]),
     ...storeProduct.mapActions(["getByParams"]),
   },
   computed: {
@@ -37,9 +39,8 @@ export default class Product extends Vue {
       this.getProduct();
     }
     document.title =
-        (this.productItem?.id
-            ? this.product?.title
-            : this.$route.meta.title) + " | Comics";
+      (this.productItem?.id ? this.product?.title : this.$route.meta.title) +
+      " | Comics";
   }
 
   getProduct() {
@@ -47,11 +48,11 @@ export default class Product extends Vue {
     const publisher_slug = this.$route.params.publisher_slug;
     const product_slug = this.$route.params.product_slug;
     this.getByParams &&
-    this.getByParams({
-      product_type: this.product_type,
-      publisher_slug,
-      product_slug,
-    });
+      this.getByParams({
+        product_type: this.product_type,
+        publisher_slug,
+        product_slug,
+      });
     this.setIsLoading && this.setIsLoading(false);
   }
 
@@ -97,19 +98,24 @@ export default class Product extends Vue {
 }
 </script>
 <template>
-  <el-row type="flex" justify="center" class="comic-page comic-block" v-if="product.id">
+  <el-row
+    type="flex"
+    justify="center"
+    class="comic-page comic-block"
+    v-if="product.id"
+  >
     <el-col :xs="10" :sm="10" :md="10" :lg="10" :xl="10" class="image">
       <el-image
-          v-if="product.image"
-          :src="product.image"
-          fit="contain"
-          alt="comic picture"
+        v-if="product.image"
+        :src="product.image"
+        fit="contain"
+        alt="comic picture"
       />
       <el-image v-else>
         <template #error>
           <div class="image-slot">
             <el-icon>
-              <picture/>
+              <picture />
             </el-icon>
           </div>
         </template>
@@ -117,28 +123,39 @@ export default class Product extends Vue {
     </el-col>
     <el-col :xs="13" :sm="13" :md="13" :lg="13" :xl="13" class="description">
       <el-col class="text-left mb-5">
-        <p class="title"><strong>{{ product.title }}</strong></p>
+        <p class="title">
+          <strong>{{ product.title }}</strong>
+        </p>
         <p>
           {{ truncate(product.description, 1500) }}
         </p>
-        <hr>
+        <hr />
         <div class="info">
           <p><strong>Publisher:</strong> {{ getPublisherName(product) }}</p>
           <p><strong>Writer:</strong> {{ getWriterName(product) }}</p>
           <p><strong>Artist:</strong> {{ getArtistName(product) }}</p>
           <p><strong>Product Code:</strong> {{ product.id }}</p>
-          <p><strong>Expected Ship Date:</strong> {{ product.expected_ship_at }}</p>
+          <p>
+            <strong>Expected Ship Date:</strong> {{ product.expected_ship_at }}
+          </p>
           <span class="badge bg-primary text-wrap">
-              <strong>Price:</strong> {{ product.price_grn }} грн.
-            </span>
+            <strong>Price:</strong> {{ product.price_grn }} грн.
+          </span>
         </div>
       </el-col>
-      <el-input-number class="mb-5" v-model="quantity" :min="1" :max="99" size="small" controls-position="right"/>
+      <el-input-number
+        class="mb-5"
+        v-model="quantity"
+        :min="1"
+        :max="99"
+        size="small"
+        controls-position="right"
+      />
       <el-row>
         <el-col :span="12">
           <el-button @click="addToMyCart" type="success" size="small">
             <el-icon>
-              <shopping-cart-full/>
+              <shopping-cart-full />
             </el-icon>
           </el-button>
         </el-col>
@@ -152,7 +169,6 @@ export default class Product extends Vue {
   </el-row>
 </template>
 <style scoped lang="scss">
-
 .comic-page {
   margin-top: 5px;
 }

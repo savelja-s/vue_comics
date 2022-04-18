@@ -1,8 +1,9 @@
-import {createStore} from "vuex";
+import { createStore } from "vuex";
 import product from "./modules/product";
-import user from "./modules/user";
+import auth from "./modules/auth";
+import cart from "./modules/cart";
 import publisher from "./modules/publisher";
 
 export default createStore({
-    modules: {product, user, publisher},
+  modules: { product, auth, cart, publisher },
 });
