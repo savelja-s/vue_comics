@@ -5,7 +5,7 @@ import {createNamespacedHelpers} from "vuex";
 import {Cart as CartModel, CartItem as CartItemModel} from "@/types";
 import {ElNotification} from 'element-plus'
 
-const storeUser = createNamespacedHelpers("user");
+const storeCart = createNamespacedHelpers("cart");
 
 @Options({
   name: "Cart",
@@ -13,11 +13,11 @@ const storeUser = createNamespacedHelpers("user");
     CartItem
   },
   methods: {
-    ...storeUser.mapGetters(["cartTotalLength", "cartTotalPrice"]),
-    ...storeUser.mapMutations(["removeFromCart", "updateCartItem"]),
+    ...storeCart.mapGetters(["cartTotalLength", "cartTotalPrice"]),
+    ...storeCart.mapMutations(["removeFromCart", "updateCartItem"]),
   },
   computed: {
-    ...storeUser.mapState(["cart"]),
+    ...storeCart.mapState(["cart"]),
   }
 })
 export default class Cart extends Vue {

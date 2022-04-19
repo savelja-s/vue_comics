@@ -5,12 +5,12 @@ import { reactive, ref } from "vue";
 import type { FormInstance } from "element-plus";
 import { createNamespacedHelpers } from "vuex";
 
-const store = createNamespacedHelpers("user");
+const storeAuth = createNamespacedHelpers("auth");
 
 @Options({
   name: "LoginPage",
   components: {},
-  methods: { ...store.mapMutations(["login"]) },
+  methods: { ...storeAuth.mapMutations(["login"]) },
 })
 export default class LoginPage extends Vue {
   // validateEmail = (rule: any, value: string, callback: any) => {

@@ -6,17 +6,18 @@ import {createNamespacedHelpers} from "vuex";
 import {ElNotification} from "element-plus";
 
 const store = createNamespacedHelpers("product");
-const storeUser = createNamespacedHelpers("user");
+const storeAuth = createNamespacedHelpers("auth");
+const storeCart = createNamespacedHelpers("cart");
 
 @Options({
   name: "ProductBox",
   components: {},
   methods: {
     ...store.mapMutations(["setProduct"]),
-    ...storeUser.mapMutations(["addToCart"]),
+    ...storeCart.mapMutations(["addToCart"]),
   },
   computed: {
-    ...storeUser.mapState(["status"]),
+    ...storeAuth.mapState(["status"]),
   },
   props: {
     product: {

@@ -11,7 +11,7 @@ const state = {
     perPage: perPage ? Number.parseInt(perPage) : 8,
     language: localStorage.getItem("language") || "en",
   },
-  user: user,
+  user,
 };
 const mutations = {
   login(state: any, payload: any) {

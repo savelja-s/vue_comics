@@ -1,27 +1,25 @@
 <script lang="ts">
-import AsideComponent from "@/components/layout/AsideComponent.vue";
 import {Options, Vue} from "vue-class-component";
 import {createNamespacedHelpers} from "vuex";
 import {PreorderComicInterface} from "@/types";
 import {PropType} from "vue";
 import ProductBox from "@/components/ProductBox.vue";
 
-const storeUser = createNamespacedHelpers("user");
+const storeAuth = createNamespacedHelpers("auth");
 const storeProduct = createNamespacedHelpers("product");
 
 @Options({
   name: "Home",
   components: {
-    AsideComponent,
     ProductBox,
   },
   computed: {
     ...storeProduct.mapState(["productsLatest"]),
-    ...storeUser.mapState(["status"]),
+    ...storeAuth.mapState(["status"]),
   },
   methods: {
     ...storeProduct.mapActions(["getLatest"]),
-    ...storeUser.mapMutations(["setIsLoading", "changeViewMode"]),
+    ...storeAuth.mapMutations(["setIsLoading", "changeViewMode"]),
   },
 })
 export default class Home extends Vue {
@@ -59,7 +57,6 @@ export default class Home extends Vue {
 <template>
   <div class="home">
     <el-container>
-      <AsideComponent width="200px"></AsideComponent>
       <el-container>
         <el-container>
           <el-row justify="center">

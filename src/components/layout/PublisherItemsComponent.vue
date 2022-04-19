@@ -1,22 +1,17 @@
 <script lang="ts">
 import {Options, Vue} from "vue-class-component";
 import {PublisherInterface} from "@/types";
-import {createNamespacedHelpers} from "vuex";
-
-const storePublisher = createNamespacedHelpers("publisher");
+import {PropType} from "vue";
 
 @Options({
   name: "PublisherItemsComponent",
-  components: {},
-  computed: {
-    ...storePublisher.mapState(["publishers"]),
-  },
   props: {
     product_type: {required: true, type: String},
+    publishers: {required: true, type: Array as PropType<PublisherInterface[]>, default: []},
   },
 })
 export default class PublisherItemsComponent extends Vue {
-  protected publishers?: any;
+  protected publishers?: PublisherInterface[];
   protected product_type?: string;
 
   protected get publishersList() {
@@ -28,13 +23,13 @@ export default class PublisherItemsComponent extends Vue {
   }
 
   getIndex(publisher: PublisherInterface) {
-    return `/${this.product_type}/${publisher.slug}`;
+    return `/${this.product_type}/${publisher ? publisher.slug : ""}`;
   }
 }
 </script>
 <template>
   <div v-if="publishersList && product_type">
-    <el-menu-item :index="product_type">
+    <el-menu-item :index="'/'+product_type">
       <router-link :to="getRoute()">
         {{ $t("all") }}
       </router-link>
@@ -51,5 +46,7 @@ export default class PublisherItemsComponent extends Vue {
   </div>
 </template>
 <style scoped>
-
+.is-active {
+  background-color: #727979;
+}
 </style>

@@ -1,16 +1,30 @@
 <script lang="ts">
 import {Options, Vue} from "vue-class-component";
 import PublisherItemsComponent from "@/components/layout/PublisherItemsComponent.vue";
+import {createNamespacedHelpers} from "vuex";
+import {PublisherInterface} from "@/types";
 
+const storePublisher = createNamespacedHelpers("publisher");
 
 @Options({
   name: "AsideComponent",
   components: {
     PublisherItemsComponent
   },
-
+  computed: {
+    ...storePublisher.mapState(["publishers"]),
+  },
+  methods: {
+    ...storePublisher.mapActions(["getListPublisher"]),
+  },
 })
 export default class AsideComponent extends Vue {
+  protected publishers?: PublisherInterface[];
+
+  get publishersList() {
+    return this.publishers ?? [];
+  }
+
   protected get activeItem() {
     const publisher_slug = this.$route.params.publisher_slug;
     const product_type = this.$route.params.product_type;
@@ -34,6 +48,7 @@ export default class AsideComponent extends Vue {
             <span>{{ $t("publishers") }}</span>
           </template>
           <PublisherItemsComponent
+              :publishers="publishersList"
               :product_type="$route.params.product_type"
           ></PublisherItemsComponent>
         </el-sub-menu>

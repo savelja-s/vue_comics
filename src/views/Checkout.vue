@@ -1,11 +1,11 @@
 <script lang="ts">
 import {Options, Vue} from "vue-class-component";
 import {createNamespacedHelpers} from "vuex";
-import {Cart} from "@/types";
+import {Cart, PreorderComicInterface} from "@/types";
 // import {StripeCheckout} from '@vue-stripe/vue-stripe';
-import { ref, onMounted } from 'vue';
+import {ref, onMounted, PropType} from 'vue';
 
-const storeUser = createNamespacedHelpers("user");
+const storeCart = createNamespacedHelpers("cart");
 
 @Options({
   name: 'Checkout',
@@ -13,10 +13,10 @@ const storeUser = createNamespacedHelpers("user");
     // StripeCheckout,
   },
   methods: {
-    ...storeUser.mapGetters(["cartTotalLength"]),
+    ...storeCart.mapGetters(["cartTotalLength"]),
   },
   computed: {
-    ...storeUser.mapState(["cart"]),
+    ...storeCart.mapState(["cart"]),
     // cartTotalPrice() {
     //   return this.cart.items.reduce((acc, curVal) => {
     //     return acc += curVal.product.price_usd * curVal.quantity
@@ -30,7 +30,7 @@ const storeUser = createNamespacedHelpers("user");
   },
 })
 export default class Checkout extends Vue {
-  protected cart?: Cart;
+  protected cart?: PropType<Cart>;
   protected cartTotalLength?: Function;
   stripe = {};
   card = {};
@@ -145,18 +145,18 @@ export default class Checkout extends Vue {
 }
 </script>
 <template>
-<!--  <div>-->
-<!--    <stripe-checkout-->
-<!--        ref="checkoutRef"-->
-<!--        mode="payment"-->
-<!--        :pk="publishableKey"-->
-<!--        :line-items="lineItems"-->
-<!--        :success-url="successURL"-->
-<!--        :cancel-url="cancelURL"-->
-<!--        @loading="v => loading = v"-->
-<!--    />-->
-<!--    <button @click="submit">Pay now!</button>-->
-<!--  </div>-->
+  <!--  <div>-->
+  <!--    <stripe-checkout-->
+  <!--        ref="checkoutRef"-->
+  <!--        mode="payment"-->
+  <!--        :pk="publishableKey"-->
+  <!--        :line-items="lineItems"-->
+  <!--        :success-url="successURL"-->
+  <!--        :cancel-url="cancelURL"-->
+  <!--        @loading="v => loading = v"-->
+  <!--    />-->
+  <!--    <button @click="submit">Pay now!</button>-->
+  <!--  </div>-->
   <!--  <div>-->
   <!--    <stripe-checkout-->
   <!--      ref="checkoutRef"-->

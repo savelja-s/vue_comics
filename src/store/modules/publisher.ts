@@ -19,7 +19,11 @@ const actions = {
     data && commit("setList", data);
   },
 };
-const getters = {};
+const getters = {
+  someF: (state: any, getters: any) => () => {
+    return 1;
+  },
+};
 export default {
   namespaced: true,
   state,

@@ -4,22 +4,19 @@ import {CartItem as CartItemModel, PreorderComicInterface} from "@/types";
 import {createNamespacedHelpers} from "vuex";
 import {PropType} from 'vue'
 
-const storeUser = createNamespacedHelpers("user");
+const storeCart = createNamespacedHelpers("cart");
 
 @Options({
   name: 'CartItem',
   props: {
-    item: {required: true, type: Object as PropType<PreorderComicInterface>,}
+    item: {required: true, type: Object as PropType<CartItemModel>,}
   },
   methods: {
-    ...storeUser.mapMutations(["removeFromCart", "updateCartItem"]),
-  },
-  computed: {
-    // ...storeUser.mapState(["cart"]),
+    ...storeCart.mapMutations(["removeFromCart", "updateCartItem"]),
   },
 })
 export default class CartItem extends Vue {
-  protected item?: CartItemModel;
+  protected item?: PropType<CartItemModel>;
   protected removeFromCart?: Function;
   protected updateCartItem?: Function;
 

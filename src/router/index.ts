@@ -13,7 +13,7 @@ import LogIn from "../views/LogIn.vue";
 import MyAccount from "../views/MyAccount.vue";
 import Checkout from "../views/Checkout.vue";
 import Success from "../views/Success.vue";
-import store from "../store";
+import TokenService from "@/services/token";
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -110,9 +110,7 @@ const router = createRouter({
   routes,
 });
 router.beforeEach((to, from, next) => {
-  const { user }: any = store.state;
-  const userStatus = user.status;
-  // console.log("userStatus", userStatus);
+  const user = TokenService.getUser();
   /*
    * Let language = to.params.lang;
    * language = language || 'en';
@@ -120,7 +118,7 @@ router.beforeEach((to, from, next) => {
    */
   if (
     to.matched.some(
-      (record) => record.meta.requiresAuth && !userStatus.isAuthenticated
+      (record) => record.meta.requiresAuth && !user
     )
   ) {
     next({ name: "login", query: { to: to.path } });

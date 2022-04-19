@@ -4,7 +4,7 @@ import ProductBox from "@/components/ProductBox.vue";
 import {createNamespacedHelpers} from "vuex";
 import AsideComponent from "@/components/layout/AsideComponent.vue";
 
-const storeUser = createNamespacedHelpers("user");
+const storeAuth = createNamespacedHelpers("auth");
 const storeProduct = createNamespacedHelpers("product");
 @Options({
   name: "Category",
@@ -13,12 +13,12 @@ const storeProduct = createNamespacedHelpers("product");
     ProductBox,
   },
   methods: {
-    ...storeUser.mapMutations(["setIsLoading", "changeViewMode", "changePerPage"]),
+    ...storeAuth.mapMutations(["setIsLoading", "changeViewMode", "changePerPage"]),
     ...storeProduct.mapActions(["getProductListByParams"]),
   },
   computed: {
     ...storeProduct.mapState(["products"]),
-    ...storeUser.mapState(["status"]),
+    ...storeAuth.mapState(["status"]),
   },
   watch: {
     $route(to, from) {

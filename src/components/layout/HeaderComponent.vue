@@ -8,10 +8,12 @@ import {
   faArrowRight,
 } from "@fortawesome/free-solid-svg-icons";
 import PublisherItemsComponent from "@/components/layout/PublisherItemsComponent.vue";
+import {PublisherInterface} from "@/types";
 
 library.add(faShoppingCart);
 
-const store = createNamespacedHelpers("user");
+const storeAuth = createNamespacedHelpers("auth");
+const storeCart = createNamespacedHelpers("cart");
 const storePublisher = createNamespacedHelpers("publisher");
 
 @Options({
@@ -20,19 +22,19 @@ const storePublisher = createNamespacedHelpers("publisher");
     PublisherItemsComponent
   },
   computed: {
-    ...store.mapState(["user", "status"]),
+    ...storeAuth.mapState(["user", "status"]),
     ...storePublisher.mapState(["publishers"]),
   },
   methods: {
-    ...store.mapMutations(["logout", "changeLanguage"]),
-    ...store.mapGetters(["cartTotalLength"]),
+    ...storeAuth.mapMutations(["logout", "changeLanguage"]),
+    ...storeCart.mapGetters(["cartTotalLength"]),
     ...storePublisher.mapActions(["getListPublisher"]),
   },
 })
 export default class HeaderComponent extends Vue {
   protected menuIsActive = false;
   private user?: any;
-  private publishers?: any;
+  protected publishers?: PublisherInterface[];
   private status?: any;
   protected logout?: Function;
   protected changeLanguage?: Function;
@@ -42,7 +44,11 @@ export default class HeaderComponent extends Vue {
 
   mounted() {
     this.$i18n.locale = this.language;
-    !this.publishers.length && this.getListPublisher && this.getListPublisher();
+    !this.publishersList.length && this.getListPublisher && this.getListPublisher();
+  }
+
+  get publishersList() {
+    return this.publishers ?? [];
   }
 
   get language() {
@@ -103,12 +109,14 @@ export default class HeaderComponent extends Vue {
           <el-sub-menu index="/preorder-comics">
             <template #title>{{ $t("menu.preorder-comics") }}</template>
             <PublisherItemsComponent
+                :publishers="publishersList"
                 :product_type="'preorder-comics'"
             ></PublisherItemsComponent>
           </el-sub-menu>
           <el-sub-menu index="/comics">
             <template #title>{{ $t("menu.comics") }}</template>
             <PublisherItemsComponent
+                :publishers="publishersList"
                 :product_type="'comics'"
             ></PublisherItemsComponent>
           </el-sub-menu>
