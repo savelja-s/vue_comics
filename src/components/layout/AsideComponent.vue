@@ -36,6 +36,7 @@ export default class AsideComponent extends Vue {
   <el-aside>
     <el-scrollbar>
       <el-menu
+          :router="true"
           class="el-menu-vertical-demo"
           :default-active="$route.fullPath"
           :default-openeds="['publishers']"

@@ -41,8 +41,10 @@ export default class HeaderComponent extends Vue {
   protected cartTotalLength?: Function;
   private logoPath = require("@/assets/logo.png");
   protected getListPublisher?: Function;
+  private isAuth = false;
 
   mounted() {
+    this.isAuth = this.status.isAuthenticated;
     this.$i18n.locale = this.language;
     !this.publishersList.length &&
       this.getListPublisher &&
@@ -66,6 +68,7 @@ export default class HeaderComponent extends Vue {
 
   logoutUser() {
     this.logout && this.logout();
+    this.isAuth = false;
     this.$router.push("/");
   }
 
@@ -95,9 +98,10 @@ export default class HeaderComponent extends Vue {
           </el-icon>
         </el-button>
         <el-menu
-          :default-active="$route.fullPath"
-          mode="horizontal"
-          v-bind:class="{ '': !menuIsActive, isOpen: menuIsActive }"
+            :default-active="$route.fullPath"
+            mode="horizontal"
+            :router="true"
+            :class="{ '': !menuIsActive, isOpen: menuIsActive }"
         >
           <el-menu-item index="/">
             <router-link to="/">
@@ -136,7 +140,7 @@ export default class HeaderComponent extends Vue {
             {{ locale.toUpperCase() }}
           </el-radio-button>
         </el-radio-group>
-        <el-dropdown v-if="status.isAuthenticated" size="small">
+        <el-dropdown v-if="isAuth" size="small">
           <el-button type="primary">
             {{ user.username }}
             <el-icon class="el-icon--right">

@@ -29,24 +29,21 @@ export default class PublisherItemsComponent extends Vue {
 </script>
 <template>
   <div v-if="publishersList && product_type">
-    <el-menu-item :index="'/'+product_type">
-      <router-link :to="getRoute()">
-        {{ $t("all") }}
-      </router-link>
+    <el-menu-item :index="'/'+product_type" :route="getRoute()">
+      {{ $t("all") }}
     </el-menu-item>
     <el-menu-item
         v-for="publisher in publishersList"
         :key="publisher.id"
         :index="getIndex(publisher)"
+        :route="getRoute(publisher)"
     >
-      <router-link :to="getRoute(publisher)">
-        {{ publisher.name }}
-      </router-link>
+      {{ publisher.name }}
     </el-menu-item>
   </div>
 </template>
 <style scoped>
-.is-active {
-  background-color: #727979;
-}
+/*.is-active {*/
+/*  background-color: #727979;*/
+/*}*/
 </style>

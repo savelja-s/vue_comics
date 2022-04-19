@@ -116,7 +116,7 @@ export default class ProductBox extends Vue {
         <el-col class="text-left mb-5">
           <p class="title"><strong>{{ product.title }}</strong></p>
           <p>
-            {{ truncate(product.description, 350) }}
+            {{ truncate(product.description, 320) }}
           </p>
           <hr>
           <div class="info">
