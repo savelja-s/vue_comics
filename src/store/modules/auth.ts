@@ -49,6 +49,9 @@ const actions = {
   refreshToken({ commit }: { commit: any }, accessToken: string) {
     commit("refreshToken", accessToken);
   },
+  logout({ commit }: { commit: any }) {
+    commit("logout");
+  },
 };
 const getters = {
   someF: (state: any, getters: any) => () => {

@@ -1,6 +1,8 @@
 import api from "./api";
 import TokenService from "./token";
 
+const requestsOfWaiting: any[] = [];
+
 const axiosInstance = api.getInstance();
 const setup = (store: any) => {
   axiosInstance.interceptors.request.use(
@@ -23,22 +25,26 @@ const setup = (store: any) => {
         if (err.response.status === 401 && !originalConfig._retry) {
           originalConfig._retry = true;
           try {
-            const rs = await axiosInstance.post("/token/refresh/", {
-              refresh: TokenService.getLocalRefreshToken(),
-            });
-            if (rs) {
-              const { access } = rs.data;
-              store.dispatch("auth/refreshToken", access);
-              TokenService.updateLocalAccessToken(access);
-            } else {
-              console.log("ELSE NED FIX");
-            }
+            console.log("originalConfig.params", originalConfig.params);
+            const rs = await axiosInstance.post(
+              "/token/refresh/",
+              {
+                refresh: TokenService.getLocalRefreshToken(),
+              },
+              originalConfig
+            );
+            const { access } = rs.data;
+            store.dispatch("auth/refreshToken", access);
+            TokenService.updateLocalAccessToken(access);
             return axiosInstance(originalConfig);
           } catch (_error) {
+            store.dispatch("auth/logout");
             return Promise.reject(_error);
           }
         }
       }
+      console.log("err", err);
+      requestsOfWaiting.push(err.config);
       return Promise.reject(err);
     }
   );
