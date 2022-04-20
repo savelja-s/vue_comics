@@ -2,15 +2,15 @@
 import {Options, Vue} from "vue-class-component";
 import {createNamespacedHelpers} from "vuex";
 import {Cart, PreorderComicInterface} from "@/types";
-// import {StripeCheckout} from '@vue-stripe/vue-stripe';
-import {ref, onMounted, PropType} from 'vue';
+import {ref, onMounted, PropType} from "vue";
+import {useStripe, StripeElement} from "vue-use-stripe";
 
 const storeCart = createNamespacedHelpers("cart");
 
 @Options({
   name: 'Checkout',
   components: {
-    // StripeCheckout,
+    StripeElement,
   },
   methods: {
     ...storeCart.mapGetters(["cartTotalLength"]),
@@ -27,29 +27,61 @@ const storeCart = createNamespacedHelpers("cart");
     //     return acc += curVal.quantity
     //   }, 0)
     // }
+
   },
+  data() {
+    const event = ref(null)
+
+    const {
+      stripe,
+      elements: [cardElement],
+    } = useStripe({
+      key: process.env.VUE_APP_STRIPE_PUBLISHABLE_KEY || '',
+      elements: [{type: 'card', options: {}}],
+    })
+
+    const registerCard = () => {
+      const val:any = event.value;
+      if (val?.complete) {
+        // Refer to the official docs to see all the Stripe instance properties.
+        // E.g. https://stripe.com/docs/js/setup_intents/confirm_card_setup
+        return stripe.value?.confirmCardSetup('<client-secret>', {
+          payment_method: {
+            card: cardElement.value,
+          },
+        })
+      }
+    }
+
+    return {
+      event,
+      cardElement,
+      registerCard,
+    }
+  }
 })
 export default class Checkout extends Vue {
   protected cart?: PropType<Cart>;
   protected cartTotalLength?: Function;
-  stripe = {};
-  card = {};
-  first_name = '';
-  last_name = '';
-  email = '';
-  phone = '';
-  address = '';
-  zipcode = '';
-  place = '';
-  errors = [];
+  cardElement?: any;
+  // card = {};
+  // first_name = '';
+  // last_name = '';
+  // email = '';
+  // phone = '';
+  // address = '';
+  // zipcode = '';
+  // place = '';
+  // errors = [];
+  private config = {
+    key: process.env.VUE_APP_STRIPE_PUBLISHABLE_KEY || "",
+    elements: [{type: 'card', options: {}}],
+  };
 
-  lineItems = [];
-  publishableKey?: string = process.env.VUE_APP_STRIPE_PUBLISHABLE_KEY;
-  successURL: string = "some";
-  cancelURL: string = "some";
-  loading: boolean = false;
+  // event = ref({});
+  // stripe = ref({});
+
   // checkoutRef = ref<StripeCheckout>()
-  // root = ref<HTMLElement | null>(null);
 
   mounted() {
     console.log('ENV', process.env)
@@ -145,6 +177,10 @@ export default class Checkout extends Vue {
 }
 </script>
 <template>
+  <p>TEST</p>
+  <StripeElement :element="cardElement" @change="event = $event"/>
+    <button @click="registerCard">Add</button>
+  <div v-if="event && event.error">{{ event.error.message }}</div>
   <!--  <div>-->
   <!--    <stripe-checkout-->
   <!--        ref="checkoutRef"-->

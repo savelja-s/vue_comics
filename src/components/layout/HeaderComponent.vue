@@ -1,15 +1,12 @@
 <script lang="ts">
 import {Options, Vue} from "vue-class-component";
-import {createNamespacedHelpers, useStore} from "vuex";
+import {createNamespacedHelpers} from "vuex";
 import {library} from "@fortawesome/fontawesome-svg-core";
 import {
   faShoppingCart,
-  faCloudUpload,
-  faArrowRight,
 } from "@fortawesome/free-solid-svg-icons";
 import PublisherItemsComponent from "@/components/layout/PublisherItemsComponent.vue";
 import {PublisherInterface} from "@/types";
-import {PropType, ref} from 'vue'
 
 library.add(faShoppingCart);
 
@@ -42,18 +39,9 @@ export default class HeaderComponent extends Vue {
   protected cartTotalLength?: Function;
   private logoPath = require("@/assets/logo.png");
   protected getListPublisher?: Function;
-  // private isAuth?: boolean;
-  private store?: any;
 
   mounted() {
-    // this.isAuth = this.status.isAuthenticated;
     this.$i18n.locale = this.status.language;
-
-    // store.dispatch("publisher/getListPublisher");
-    // this.store = store;
-    // this.publishers = store.state.publisher.publishers;
-    // console.log(, "publisher-get");
-    // console.log(store.state.publisher.publishers, "publishers");
     !this.publishersList.length &&
     this.getListPublisher &&
     this.getListPublisher();
