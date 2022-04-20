@@ -25,7 +25,7 @@ const setup = (store: any) => {
         if (err.response.status === 401 && !originalConfig._retry) {
           originalConfig._retry = true;
           try {
-            console.log("originalConfig.params", originalConfig.params);
+            // console.log("originalConfig.params", originalConfig.params);
             const rs = await axiosInstance.post(
               "/token/refresh/",
               {

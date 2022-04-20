@@ -14,16 +14,9 @@ const storePublisher = createNamespacedHelpers("publisher");
   computed: {
     ...storePublisher.mapState(["publishers"]),
   },
-  methods: {
-    ...storePublisher.mapActions(["getListPublisher"]),
-  },
 })
 export default class AsideComponent extends Vue {
   protected publishers?: PublisherInterface[];
-
-  get publishersList() {
-    return this.publishers ?? [];
-  }
 
   protected get activeItem() {
     const publisher_slug = this.$route.params.publisher_slug;
@@ -36,6 +29,7 @@ export default class AsideComponent extends Vue {
   <el-aside>
     <el-scrollbar>
       <el-menu
+          v-if="publishers"
           :router="true"
           class="el-menu-vertical-demo"
           :default-active="$route.fullPath"
@@ -49,7 +43,7 @@ export default class AsideComponent extends Vue {
             <span>{{ $t("publishers") }}</span>
           </template>
           <PublisherItemsComponent
-              :publishers="publishersList"
+              :publishers="publishers"
               :product_type="$route.params.product_type"
           ></PublisherItemsComponent>
         </el-sub-menu>

@@ -24,7 +24,7 @@ const mutations = {
   },
   logout(state: any) {
     state.user = {};
-    state.isAuthenticated = false;
+    state.status.isAuthenticated = false;
     TokenService.removeUser();
   },
   changeViewMode(state: any) {
